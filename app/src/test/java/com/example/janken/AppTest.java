@@ -187,7 +187,7 @@ class AppTest {
 
 class StandardInputSnatcher extends InputStream {
 
-    private static final String LINE_SEPARATOR = System.getProperty("line,separator");
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
     private StringBuilder sb = new StringBuilder();
 
@@ -208,7 +208,7 @@ class StandardInputSnatcher extends InputStream {
 
 class StandardOutputSnatcher extends PrintStream {
 
-    private static final String LINE_SEPARATOR = System.getProperty("line,separator");
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
     private BufferedReader br = new BufferedReader(new StringReader(""));
 
