@@ -1,6 +1,6 @@
-package com.example.janken.dao;
+package com.example.janken.dataaccess.dao;
 
-import com.example.janken.model.Player;
+import com.example.janken.dataaccess.model.Player;
 import lombok.val;
 
 import java.io.IOException;

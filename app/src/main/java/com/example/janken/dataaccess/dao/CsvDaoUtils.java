@@ -1,4 +1,4 @@
-package com.example.janken.dao;
+package com.example.janken.dataaccess.dao;
 
 import lombok.val;
 

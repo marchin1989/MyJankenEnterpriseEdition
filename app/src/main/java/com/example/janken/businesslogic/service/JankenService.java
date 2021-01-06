@@ -1,8 +1,8 @@
-package com.example.janken.service;
+package com.example.janken.businesslogic.service;
 
-import com.example.janken.dao.JankenCsvDao;
-import com.example.janken.dao.JankenDetailCsvDao;
-import com.example.janken.model.*;
+import com.example.janken.dataaccess.dao.JankenCsvDao;
+import com.example.janken.dataaccess.dao.JankenDetailCsvDao;
+import com.example.janken.dataaccess.model.*;
 import lombok.val;
 
 import java.time.LocalDateTime;

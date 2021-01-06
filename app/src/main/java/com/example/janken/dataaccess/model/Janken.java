@@ -1,18 +1,17 @@
-package com.example.janken.model;
+package com.example.janken.dataaccess.model;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public class JankenDetail {
+public class Janken {
     private Long id;
-    private Long jankenId;
-    private Long playerId;
-    private Hand hand;
-    private Result result;
+    private LocalDateTime playedAt;
 }

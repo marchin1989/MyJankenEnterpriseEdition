@@ -1,7 +1,7 @@
-package com.example.janken.service;
+package com.example.janken.businesslogic.service;
 
-import com.example.janken.dao.PlayerCsvDao;
-import com.example.janken.model.Player;
+import com.example.janken.dataaccess.dao.PlayerCsvDao;
+import com.example.janken.dataaccess.model.Player;
 
 public class PlayerService {
 
