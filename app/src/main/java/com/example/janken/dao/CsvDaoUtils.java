@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class DaoUtils {
+public class CsvDaoUtils {
     // MyJankenEnterpriseEdition/app/../data/ を指す
     private static final String DEFAULT_DATA_DIR = System.getProperty("user.dir") + "/../data/";
     private static final String DATA_DIR_ENV_VARIABLE = System.getenv("DATA_DIR");

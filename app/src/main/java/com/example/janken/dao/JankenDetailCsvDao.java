@@ -5,9 +5,9 @@ import lombok.val;
 
 import java.io.*;
 
-public class JankenDetailDao {
+public class JankenDetailCsvDao {
 
-    private static final String JANKEN_DETAILS_CSV = DaoUtils.DATA_DIR + "janken_details.csv";
+    private static final String JANKEN_DETAILS_CSV = CsvDaoUtils.DATA_DIR + "janken_details.csv";
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public JankenDetail insert(JankenDetail jankenDetail) {
@@ -20,7 +20,7 @@ public class JankenDetailDao {
             // ファイルが存在しない場合に備えて作成
             jankenDetailsCsv.createNewFile();
 
-            val jankenDetailId = DaoUtils.countFileLines(JANKEN_DETAILS_CSV) + 1;
+            val jankenDetailId = CsvDaoUtils.countFileLines(JANKEN_DETAILS_CSV) + 1;
             val jankenDetailWithId = new JankenDetail(
                     jankenDetailId,
                     jankenDetail.getJankenId(),
@@ -37,7 +37,7 @@ public class JankenDetailDao {
     }
 
     private static void writeJankenDetail(PrintWriter pw, JankenDetail jankenDetail) {
-        val line = String.join(DaoUtils.CSV_DELIMITER,
+        val line = String.join(CsvDaoUtils.CSV_DELIMITER,
                 String.valueOf(jankenDetail.getId()),
                 String.valueOf(jankenDetail.getJankenId()),
                 String.valueOf(jankenDetail.getPlayerId()),
