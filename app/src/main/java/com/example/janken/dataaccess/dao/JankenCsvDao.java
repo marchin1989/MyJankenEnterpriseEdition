@@ -4,11 +4,31 @@ import com.example.janken.dataaccess.model.Janken;
 import lombok.val;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 public class JankenCsvDao {
 
+    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     private static final String JANKENS_CSV = CsvDaoUtils.DATA_DIR + "jankens.csv";
+
+    public Optional<Janken> findById(long id) {
+        try (val stream = Files.lines(Paths.get(JANKENS_CSV), StandardCharsets.UTF_8)) {
+            return stream.map(this::line2Janken)
+                    .filter(j -> j.getId() == id)
+                    .findFirst();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    public long count() {
+        return CsvDaoUtils.countFileLines(JANKENS_CSV);
+    }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public Janken insert(Janken janken) {
@@ -24,7 +44,8 @@ public class JankenCsvDao {
             val jankenId = CsvDaoUtils.countFileLines(JANKENS_CSV) + 1;
             val jankenWithId = new Janken(jankenId, janken.getPlayedAt());
 
-            writeJanken(pw, jankenWithId);
+            val line = janken2Line(jankenWithId);
+            pw.println(line);
 
             return jankenWithId;
         } catch (IOException e) {
@@ -32,9 +53,16 @@ public class JankenCsvDao {
         }
     }
 
-    private void writeJanken(PrintWriter pw, Janken janken) {
-        val formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd hh:mm:ss");
-        val playedAtStr = formatter.format(janken.getPlayedAt());
-        pw.println(janken.getId() + CsvDaoUtils.CSV_DELIMITER + playedAtStr);
+    private Janken line2Janken(String line) {
+        val values = line.split(CsvDaoUtils.CSV_DELIMITER);
+        val jankenId = Long.valueOf(values[0]);
+        val playedAt = LocalDateTime.parse(values[1], dateTimeFormatter);
+
+        return new Janken(jankenId, playedAt);
+    }
+
+    private String janken2Line(Janken janken) {
+        val playedAtStr = dateTimeFormatter.format(janken.getPlayedAt());
+        return janken.getId() + CsvDaoUtils.CSV_DELIMITER + playedAtStr;
     }
 }

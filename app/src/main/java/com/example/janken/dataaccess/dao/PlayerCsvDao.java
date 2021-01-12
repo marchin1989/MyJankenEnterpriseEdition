@@ -16,20 +16,20 @@ public class PlayerCsvDao {
     public Player findPlayerById(long playerId) {
         try (val stream = Files.lines(Paths.get(PLAYERS_CSV), StandardCharsets.UTF_8)) {
             return stream
-                    .map(line -> {
-                        val values = line.split(CsvDaoUtils.CSV_DELIMITER);
-                        val id = Long.parseLong(values[0]);
-                        val name = values[1];
-                        return new Player(id, name);
-                    })
+                    .map(this::line2Player)
                     // ID で検索
                     .filter(p -> p.getId() == playerId)
                     .findFirst()
-                    .orElseThrow(() -> {
-                        throw new IllegalArgumentException("Player not exist. playerId = " + playerId);
-                    });
+                    .orElseThrow();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    private Player line2Player(String line) {
+        val values = line.split(CsvDaoUtils.CSV_DELIMITER);
+        val id = Long.parseLong(values[0]);
+        val name = values[1];
+        return new Player(id, name);
     }
 }
