@@ -1,8 +1,9 @@
 package com.example.janken.dataaccess.dao;
 
-import com.example.janken.dataaccess.model.Hand;
-import com.example.janken.dataaccess.model.JankenDetail;
-import com.example.janken.dataaccess.model.Result;
+import com.example.janken.businesslogic.dao.JankenDetailDao;
+import com.example.janken.businesslogic.model.Hand;
+import com.example.janken.businesslogic.model.JankenDetail;
+import com.example.janken.businesslogic.model.Result;
 import lombok.val;
 
 import java.io.*;
@@ -11,10 +12,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Optional;
 
-public class JankenDetailCsvDao {
+public class JankenDetailCsvDao implements JankenDetailDao {
 
     private static final String JANKEN_DETAILS_CSV = CsvDaoUtils.DATA_DIR + "janken_details.csv";
 
+    @Override
     public Optional<JankenDetail> findById(long id) {
         try (val stream = Files.lines(Paths.get(JANKEN_DETAILS_CSV), StandardCharsets.UTF_8)) {
             return stream.map(this::line2JankenDetail)
@@ -25,12 +27,13 @@ public class JankenDetailCsvDao {
         }
     }
 
+    @Override
     public long count() {
         return CsvDaoUtils.countFileLines(JANKEN_DETAILS_CSV);
     }
 
+    @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-
     public JankenDetail insert(JankenDetail jankenDetail) {
         val jankenDetailsCsv = new File(JANKEN_DETAILS_CSV);
 

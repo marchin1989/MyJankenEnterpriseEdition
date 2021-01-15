@@ -1,6 +1,7 @@
 package com.example.janken.dataaccess.dao;
 
-import com.example.janken.dataaccess.model.Player;
+import com.example.janken.businesslogic.dao.PlayerDao;
+import com.example.janken.businesslogic.model.Player;
 import lombok.val;
 
 import java.io.IOException;
@@ -9,10 +10,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class PlayerCsvDao {
+public class PlayerCsvDao implements PlayerDao {
 
     private static final String PLAYERS_CSV = CsvDaoUtils.DATA_DIR + "players.csv";
 
+    @Override
     public Player findPlayerById(long playerId) {
         try (val stream = Files.lines(Paths.get(PLAYERS_CSV), StandardCharsets.UTF_8)) {
             return stream

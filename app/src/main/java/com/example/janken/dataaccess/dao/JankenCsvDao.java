@@ -1,6 +1,7 @@
 package com.example.janken.dataaccess.dao;
 
-import com.example.janken.dataaccess.model.Janken;
+import com.example.janken.businesslogic.dao.JankenDao;
+import com.example.janken.businesslogic.model.Janken;
 import lombok.val;
 
 import java.io.*;
@@ -11,11 +12,12 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
-public class JankenCsvDao {
+public class JankenCsvDao implements JankenDao {
 
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     private static final String JANKENS_CSV = CsvDaoUtils.DATA_DIR + "jankens.csv";
 
+    @Override
     public Optional<Janken> findById(long id) {
         try (val stream = Files.lines(Paths.get(JANKENS_CSV), StandardCharsets.UTF_8)) {
             return stream.map(this::line2Janken)
@@ -26,10 +28,12 @@ public class JankenCsvDao {
         }
     }
 
+    @Override
     public long count() {
         return CsvDaoUtils.countFileLines(JANKENS_CSV);
     }
 
+    @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public Janken insert(Janken janken) {
         val jankensCsv = new File(JANKENS_CSV);

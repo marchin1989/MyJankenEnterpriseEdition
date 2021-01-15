@@ -1,8 +1,9 @@
 package com.example.janken.businesslogic.service;
 
-import com.example.janken.dataaccess.dao.JankenCsvDao;
-import com.example.janken.dataaccess.dao.JankenDetailCsvDao;
-import com.example.janken.dataaccess.model.*;
+import com.example.janken.businesslogic.dao.JankenDao;
+import com.example.janken.businesslogic.dao.JankenDetailDao;
+import com.example.janken.businesslogic.model.*;
+import com.example.janken.framework.ServiceLocator;
 import lombok.val;
 
 import java.time.LocalDateTime;
@@ -10,8 +11,8 @@ import java.util.Optional;
 
 public class JankenService {
 
-    private JankenCsvDao jankenCsvDao = new JankenCsvDao();
-    private JankenDetailCsvDao jankenDetailCsvDao = new JankenDetailCsvDao();
+    private JankenDao jankenDao = ServiceLocator.resolve(JankenDao.class);
+    private JankenDetailDao jankenDetailDao = ServiceLocator.resolve(JankenDetailDao.class);
 
     /**
      * じゃんけんを実行し、勝者を返す。
@@ -71,7 +72,7 @@ public class JankenService {
 
         // じゃんけんを保存
 
-        val jankenWithId = jankenCsvDao.insert(janken);
+        val jankenWithId = jankenDao.insert(janken);
 
         // じゃんけん明細を生成
 
@@ -80,8 +81,8 @@ public class JankenService {
 
         // じゃんけん明細を保存
 
-        jankenDetailCsvDao.insert(jankenDetail1);
-        jankenDetailCsvDao.insert(jankenDetail2);
+        jankenDetailDao.insert(jankenDetail1);
+        jankenDetailDao.insert(jankenDetail2);
 
         // 勝敗の表示
 
