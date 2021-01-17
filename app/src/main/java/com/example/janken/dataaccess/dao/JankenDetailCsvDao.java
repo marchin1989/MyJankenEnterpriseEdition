@@ -10,6 +10,8 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class JankenDetailCsvDao implements JankenDetailDao {
@@ -33,8 +35,7 @@ public class JankenDetailCsvDao implements JankenDetailDao {
     }
 
     @Override
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public JankenDetail insert(JankenDetail jankenDetail) {
+    public List<JankenDetail> insertAll(List<JankenDetail> jankenDetails) {
         val jankenDetailsCsv = new File(JANKEN_DETAILS_CSV);
 
         try (val fw = new FileWriter(jankenDetailsCsv, true);
@@ -44,17 +45,23 @@ public class JankenDetailCsvDao implements JankenDetailDao {
             // ファイルが存在しない場合に備えて作成
             jankenDetailsCsv.createNewFile();
 
-            val jankenDetailId = CsvDaoUtils.countFileLines(JANKEN_DETAILS_CSV) + 1;
-            val jankenDetailWithId = new JankenDetail(
-                    jankenDetailId,
-                    jankenDetail.getJankenId(),
-                    jankenDetail.getPlayerId(),
-                    jankenDetail.getHand(),
-                    jankenDetail.getResult());
+            val jankenDetailsWithId = new ArrayList<JankenDetail>();
 
-            pw.println(jankenDetail2Line(jankenDetailWithId));
+            for (int i = 0; i < jankenDetails.size(); i++) {
+                val jankenDetailId = CsvDaoUtils.countFileLines(JANKEN_DETAILS_CSV) + i + 1;
+                val jankenDetail = jankenDetails.get(i);
 
-            return jankenDetailWithId;
+                val jankenDetailWithId = new JankenDetail(
+                        jankenDetailId,
+                        jankenDetail.getJankenId(),
+                        jankenDetail.getPlayerId(),
+                        jankenDetail.getHand(),
+                        jankenDetail.getResult());
+
+                pw.println(jankenDetail2Line(jankenDetailWithId));
+            }
+
+            return jankenDetailsWithId;
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
