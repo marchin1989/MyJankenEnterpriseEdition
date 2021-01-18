@@ -1,14 +1,14 @@
 package com.example.janken;
 
-import com.example.janken.businesslogic.dao.JankenDao;
-import com.example.janken.businesslogic.dao.JankenDetailDao;
-import com.example.janken.businesslogic.dao.PlayerDao;
-import com.example.janken.businesslogic.service.JankenService;
-import com.example.janken.businesslogic.service.PlayerService;
-import com.example.janken.dataaccess.dao.JankenCsvDao;
-import com.example.janken.dataaccess.dao.JankenDetailCsvDao;
-import com.example.janken.dataaccess.dao.PlayerCsvDao;
+import com.example.janken.application.service.JankenService;
+import com.example.janken.application.service.PlayerService;
+import com.example.janken.domain.dao.JankenDao;
+import com.example.janken.domain.dao.JankenDetailDao;
+import com.example.janken.domain.dao.PlayerDao;
 import com.example.janken.framework.ServiceLocator;
+import com.example.janken.infrastructure.dao.JankenCsvDao;
+import com.example.janken.infrastructure.dao.JankenDetailCsvDao;
+import com.example.janken.infrastructure.dao.PlayerCsvDao;
 import com.example.janken.presentation.controller.JankenController;
 
 public class App {

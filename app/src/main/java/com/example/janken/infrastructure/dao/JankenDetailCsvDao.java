@@ -1,9 +1,9 @@
-package com.example.janken.dataaccess.dao;
+package com.example.janken.infrastructure.dao;
 
-import com.example.janken.businesslogic.dao.JankenDetailDao;
-import com.example.janken.businesslogic.model.Hand;
-import com.example.janken.businesslogic.model.JankenDetail;
-import com.example.janken.businesslogic.model.Result;
+import com.example.janken.domain.dao.JankenDetailDao;
+import com.example.janken.domain.model.Hand;
+import com.example.janken.domain.model.JankenDetail;
+import com.example.janken.domain.model.Result;
 import lombok.val;
 
 import java.io.*;
