@@ -6,9 +6,9 @@ import com.example.janken.framework.ServiceLocator;
 
 public class PlayerService {
 
-    private PlayerDao playerCsvDao = ServiceLocator.resolve(PlayerDao.class);
+    private PlayerDao playerDao = ServiceLocator.resolve(PlayerDao.class);
 
     public Player findPlayerById(long playerId) {
-        return playerCsvDao.findPlayerById(playerId);
+        return playerDao.findPlayerById(playerId);
     }
 }

@@ -8,7 +8,7 @@ import com.example.janken.domain.dao.PlayerDao;
 import com.example.janken.framework.ServiceLocator;
 import com.example.janken.infrastructure.dao.JankenCsvDao;
 import com.example.janken.infrastructure.dao.JankenDetailCsvDao;
-import com.example.janken.infrastructure.dao.PlayerCsvDao;
+import com.example.janken.infrastructure.dao.PlayerMySQLDao;
 import com.example.janken.presentation.controller.JankenController;
 
 public class App {
@@ -22,7 +22,7 @@ public class App {
         ServiceLocator.register(JankenService.class, JankenService.class);
         ServiceLocator.register(PlayerService.class, PlayerService.class);
 
-        ServiceLocator.register(PlayerDao.class, PlayerCsvDao.class);
+        ServiceLocator.register(PlayerDao.class, PlayerMySQLDao.class);
         ServiceLocator.register(JankenDao.class, JankenCsvDao.class);
         ServiceLocator.register(JankenDetailDao.class, JankenDetailCsvDao.class);
 
