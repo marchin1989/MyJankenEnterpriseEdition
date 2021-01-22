@@ -1,4 +1,4 @@
-package com.example.janken.infrastructure.dao;
+package com.example.janken.infrastructure.mysqldao;
 
 import com.example.janken.domain.dao.JankenDao;
 import com.example.janken.domain.model.Janken;

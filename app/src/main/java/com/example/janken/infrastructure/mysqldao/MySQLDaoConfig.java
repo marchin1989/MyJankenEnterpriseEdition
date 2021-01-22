@@ -1,4 +1,4 @@
-package com.example.janken.infrastructure.dao;
+package com.example.janken.infrastructure.mysqldao;
 
 public class MySQLDaoConfig {
     static final String MYSQL_URL = "jdbc:mysql://localhost:3306/janken";
