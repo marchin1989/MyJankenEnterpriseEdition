@@ -8,8 +8,8 @@ import com.example.janken.domain.dao.JankenDetailDao;
 import com.example.janken.domain.model.Hand;
 import com.example.janken.domain.model.JankenDetail;
 import com.example.janken.domain.model.Result;
-import com.example.janken.infrastructure.dao.JankenCsvDao;
 import com.example.janken.infrastructure.dao.JankenDetailCsvDao;
+import com.example.janken.infrastructure.dao.JankenMySQLDao;
 import lombok.val;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -32,7 +32,7 @@ class AppTest {
     private static StandardInputSnatcher stdinSnatcher;
     private static StandardOutputSnatcher stdoutSnatcher;
 
-    private static JankenDao jankenDao = new JankenCsvDao();
+    private static JankenDao jankenDao = new JankenMySQLDao();
     private static JankenDetailDao jankenDetailDao = new JankenDetailCsvDao();
 
     @BeforeAll
