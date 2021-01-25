@@ -8,7 +8,7 @@ import com.example.janken.domain.dao.JankenDetailDao;
 import com.example.janken.domain.model.Hand;
 import com.example.janken.domain.model.JankenDetail;
 import com.example.janken.domain.model.Result;
-import com.example.janken.framework.TransactionManager;
+import com.example.janken.domain.transaction.TransactionManager;
 import com.example.janken.infrastructure.jdbctransaction.JdbcTransactionManager;
 import com.example.janken.infrastructure.mysqldao.JankenDetailMySQLDao;
 import com.example.janken.infrastructure.mysqldao.JankenMySQLDao;
