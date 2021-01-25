@@ -2,9 +2,14 @@ package com.example.janken.infrastructure.mysqldao;
 
 import com.example.janken.domain.dao.JankenDao;
 import com.example.janken.domain.model.Janken;
+import com.example.janken.framework.Transaction;
+import com.example.janken.infrastructure.jdbctransaction.JdbcTransaction;
 import lombok.val;
 
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -18,10 +23,9 @@ public class JankenMySQLDao implements JankenDao {
     private static final String COUNT_QUERY = "SELECT COUNT(*) FROM jankens";
 
     @Override
-    public Optional<Janken> findById(long id) {
-        try (val conn = DriverManager.getConnection(MySQLDaoConfig.MYSQL_URL, MySQLDaoConfig.MYSQL_USER,
-                MySQLDaoConfig.MYSQL_PASSWORD);
-             val stmt = conn.prepareStatement(SELECT_WHERE_ID_EQUALS_QUERY)) {
+    public Optional<Janken> findById(Transaction tx, long id) {
+        val conn = ((JdbcTransaction) tx).conn;
+        try (val stmt = conn.prepareStatement(SELECT_WHERE_ID_EQUALS_QUERY)) {
 
             stmt.setLong(1, id);
 
@@ -35,10 +39,9 @@ public class JankenMySQLDao implements JankenDao {
     }
 
     @Override
-    public long count() {
-        try (val conn = DriverManager.getConnection(MySQLDaoConfig.MYSQL_URL, MySQLDaoConfig.MYSQL_USER,
-                MySQLDaoConfig.MYSQL_PASSWORD);
-             val stmt = conn.prepareStatement(COUNT_QUERY)) {
+    public long count(Transaction tx) {
+        val conn = ((JdbcTransaction) tx).conn;
+        try (val stmt = conn.prepareStatement(COUNT_QUERY)) {
             try (val rs = stmt.executeQuery()) {
                 rs.next();
                 return rs.getLong(1);
@@ -50,10 +53,9 @@ public class JankenMySQLDao implements JankenDao {
     }
 
     @Override
-    public Janken insert(Janken janken) {
-        try (val conn = DriverManager.getConnection(MySQLDaoConfig.MYSQL_URL, MySQLDaoConfig.MYSQL_USER,
-                MySQLDaoConfig.MYSQL_PASSWORD);
-             val stmt = conn.prepareStatement(INSERT_COMMAND, Statement.RETURN_GENERATED_KEYS)) {
+    public Janken insert(Transaction tx, Janken janken) {
+        val conn = ((JdbcTransaction) tx).conn;
+        try (val stmt = conn.prepareStatement(INSERT_COMMAND, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setTimestamp(1, Timestamp.valueOf(janken.getPlayedAt()));
             stmt.executeUpdate();

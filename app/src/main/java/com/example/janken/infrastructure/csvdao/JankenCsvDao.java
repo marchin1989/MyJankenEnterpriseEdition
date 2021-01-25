@@ -2,6 +2,7 @@ package com.example.janken.infrastructure.csvdao;
 
 import com.example.janken.domain.dao.JankenDao;
 import com.example.janken.domain.model.Janken;
+import com.example.janken.framework.Transaction;
 import lombok.val;
 
 import java.io.*;
@@ -18,7 +19,7 @@ public class JankenCsvDao implements JankenDao {
     private static final String JANKENS_CSV = CsvDaoUtils.DATA_DIR + "jankens.csv";
 
     @Override
-    public Optional<Janken> findById(long id) {
+    public Optional<Janken> findById(Transaction tx, long id) {
         try (val stream = Files.lines(Paths.get(JANKENS_CSV), StandardCharsets.UTF_8)) {
             return stream.map(this::line2Janken)
                     .filter(j -> j.getId() == id)
@@ -29,13 +30,13 @@ public class JankenCsvDao implements JankenDao {
     }
 
     @Override
-    public long count() {
+    public long count(Transaction tx) {
         return CsvDaoUtils.countFileLines(JANKENS_CSV);
     }
 
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public Janken insert(Janken janken) {
+    public Janken insert(Transaction tx, Janken janken) {
         val jankensCsv = new File(JANKENS_CSV);
 
         try (val fw = new FileWriter(jankensCsv, true);

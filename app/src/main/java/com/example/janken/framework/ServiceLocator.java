@@ -57,6 +57,7 @@ class ClassInstancePair {
     ClassInstancePair ofInstanceCreatedByNoArgsConstructor() {
         try {
             val constructor = clazz.getConstructor();
+            constructor.setAccessible(true);
             val instance = constructor.newInstance();
             return new ClassInstancePair(clazz, instance);
         } catch (NoSuchMethodException

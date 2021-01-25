@@ -8,6 +8,8 @@ import com.example.janken.domain.dao.JankenDetailDao;
 import com.example.janken.domain.model.Hand;
 import com.example.janken.domain.model.JankenDetail;
 import com.example.janken.domain.model.Result;
+import com.example.janken.framework.TransactionManager;
+import com.example.janken.infrastructure.jdbctransaction.JdbcTransactionManager;
 import com.example.janken.infrastructure.mysqldao.JankenDetailMySQLDao;
 import com.example.janken.infrastructure.mysqldao.JankenMySQLDao;
 import lombok.val;
@@ -31,6 +33,8 @@ class AppTest {
     private static PrintStream defaultStdout = System.out;
     private static StandardInputSnatcher stdinSnatcher;
     private static StandardOutputSnatcher stdoutSnatcher;
+
+    private static TransactionManager tm = new JdbcTransactionManager();
 
     private static JankenDao jankenDao = new JankenMySQLDao();
     private static JankenDetailDao jankenDetailDao = new JankenDetailMySQLDao();
@@ -71,11 +75,16 @@ class AppTest {
 
         // 準備
 
+        long jankensCountBeforeTest;
+        long jankenDetailsCountBeforeTest;
+
         stdinSnatcher.inputLine(String.valueOf(player1HandValue));
         stdinSnatcher.inputLine(String.valueOf(player2HandValue));
 
-        var jankensCountBeforeTest = jankenDao.count();
-        var jankenDetailsCountBeforeTest = jankenDetailDao.count();
+        try (val tx = tm.startTransaction()) {
+            jankensCountBeforeTest = jankenDao.count(tx);
+            jankenDetailsCountBeforeTest = jankenDetailDao.count(tx);
+        }
 
         // 実行
 
@@ -84,54 +93,57 @@ class AppTest {
 
         // 検証
 
-        // 標準出力の検証
-        var actualStdout = stdoutSnatcher.readAllLines();
-        var expectedStdout = String.join(LINE_SEPARATOR, Arrays.asList(
-                "STONE: 0",
-                "PAPER: 1",
-                "SCISSORS: 2",
-                "Please select Alice hand:",
-                "STONE: 0",
-                "PAPER: 1",
-                "SCISSORS: 2",
-                "Please select Bob hand:",
-                "Alice selected " + player1HandName,
-                "Bob selected " + player2HandName,
-                resultMessage
-        ));
-        assertEquals(expectedStdout, actualStdout, "標準出力の内容が想定通りであること");
+        try (val tx = tm.startTransaction()) {
 
-        // じゃんけんデータの CSV の検証
-        assertEquals(jankensCountBeforeTest + 1, jankenDao.count(), "じゃんけんが 1 件追加されたこと");
-        val expectedJankenId = jankensCountBeforeTest + 1;
-        val savedJanken = jankenDao.findById(jankensCountBeforeTest + 1);
-        assertTrue(savedJanken.isPresent(), "じゃんけんが保存されていること");
+            // 標準出力の検証
+            var actualStdout = stdoutSnatcher.readAllLines();
+            var expectedStdout = String.join(LINE_SEPARATOR, Arrays.asList(
+                    "STONE: 0",
+                    "PAPER: 1",
+                    "SCISSORS: 2",
+                    "Please select Alice hand:",
+                    "STONE: 0",
+                    "PAPER: 1",
+                    "SCISSORS: 2",
+                    "Please select Bob hand:",
+                    "Alice selected " + player1HandName,
+                    "Bob selected " + player2HandName,
+                    resultMessage
+            ));
+            assertEquals(expectedStdout, actualStdout, "標準出力の内容が想定通りであること");
 
-        // じゃんけん明細データの CSV の検証
-        assertEquals(jankenDetailsCountBeforeTest + 2, jankenDetailDao.count(),
-                "じゃんけん明細が 2 行追加されたこと");
+            // じゃんけんデータの CSV の検証
+            assertEquals(jankensCountBeforeTest + 1, jankenDao.count(tx), "じゃんけんが 1 件追加されたこと");
+            val expectedJankenId = jankensCountBeforeTest + 1;
+            val savedJanken = jankenDao.findById(tx, jankensCountBeforeTest + 1);
+            assertTrue(savedJanken.isPresent(), "じゃんけんが保存されていること");
 
-        val expectedJankenDetail1Id = jankenDetailsCountBeforeTest + 1;
-        val expectedJankneDetail1 = new JankenDetail(
-                expectedJankenDetail1Id,
-                expectedJankenId,
-                1L,
-                Hand.of(player1HandValue),
-                Result.of(player1ResultValue));
-        val savedJankenDetail1 = jankenDetailDao.findById(expectedJankenDetail1Id);
-        assertEquals(expectedJankneDetail1, savedJankenDetail1.get(),
-                "じゃんけん明細に追加された 1 件目の内容が想定通りであること");
+            // じゃんけん明細データの CSV の検証
+            assertEquals(jankenDetailsCountBeforeTest + 2, jankenDetailDao.count(tx),
+                    "じゃんけん明細が 2 行追加されたこと");
 
-        val expectedJankenDetail2Id = jankenDetailsCountBeforeTest + 2;
-        val expectedJankneDetail2 = new JankenDetail(
-                expectedJankenDetail2Id,
-                expectedJankenId,
-                2L,
-                Hand.of(player2HandValue),
-                Result.of(player2ResultValue));
-        val savedJankenDetail2 = jankenDetailDao.findById(expectedJankenDetail2Id);
-        assertEquals(expectedJankneDetail2, savedJankenDetail2.get(),
-                "じゃんけん明細に追加された 2 件目の内容が想定通りであること");
+            val expectedJankenDetail1Id = jankenDetailsCountBeforeTest + 1;
+            val expectedJankneDetail1 = new JankenDetail(
+                    expectedJankenDetail1Id,
+                    expectedJankenId,
+                    1L,
+                    Hand.of(player1HandValue),
+                    Result.of(player1ResultValue));
+            val savedJankenDetail1 = jankenDetailDao.findById(tx, expectedJankenDetail1Id);
+            assertEquals(expectedJankneDetail1, savedJankenDetail1.get(),
+                    "じゃんけん明細に追加された 1 件目の内容が想定通りであること");
+
+            val expectedJankenDetail2Id = jankenDetailsCountBeforeTest + 2;
+            val expectedJankneDetail2 = new JankenDetail(
+                    expectedJankenDetail2Id,
+                    expectedJankenId,
+                    2L,
+                    Hand.of(player2HandValue),
+                    Result.of(player2ResultValue));
+            val savedJankenDetail2 = jankenDetailDao.findById(tx, expectedJankenDetail2Id);
+            assertEquals(expectedJankneDetail2, savedJankenDetail2.get(),
+                    "じゃんけん明細に追加された 2 件目の内容が想定通りであること");
+        }
     }
 
     @ParameterizedTest
