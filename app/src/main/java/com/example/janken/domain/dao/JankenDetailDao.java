@@ -8,6 +8,8 @@ import java.util.Optional;
 
 public interface JankenDetailDao {
 
+    List<JankenDetail> findAllOrderById(Transaction tx);
+
     Optional<JankenDetail> findById(Transaction tx, long id);
 
     long count(Transaction t);

@@ -11,12 +11,24 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class JankenCsvDao implements JankenDao {
 
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     private static final String JANKENS_CSV = CsvDaoUtils.DATA_DIR + "jankens.csv";
+
+    @Override
+    public List<Janken> findAllOrderById(Transaction tx) {
+        try (val stream = Files.lines(Paths.get(JANKENS_CSV), StandardCharsets.UTF_8)) {
+            return stream.map(this::line2Janken)
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
 
     @Override
     public Optional<Janken> findById(Transaction tx, long id) {

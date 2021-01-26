@@ -5,9 +5,6 @@ package com.example.janken;
 
 import com.example.janken.domain.dao.JankenDao;
 import com.example.janken.domain.dao.JankenDetailDao;
-import com.example.janken.domain.model.Hand;
-import com.example.janken.domain.model.JankenDetail;
-import com.example.janken.domain.model.Result;
 import com.example.janken.domain.transaction.TransactionManager;
 import com.example.janken.infrastructure.jdbctransaction.JdbcTransactionManager;
 import com.example.janken.infrastructure.mysqldao.JankenDetailMySQLDao;
@@ -23,9 +20,11 @@ import java.io.*;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AppTest {
+
+    private static final long PLAYER_1_ID = 1;
+    private static final long PLAYER_2_ID = 2;
 
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
@@ -109,35 +108,32 @@ class AppTest {
 
             // じゃんけんデータの CSV の検証
             assertEquals(jankensCountBeforeTest + 1, jankenDao.count(tx), "じゃんけんが 1 件追加されたこと");
-            val expectedJankenId = jankensCountBeforeTest + 1;
-            val savedJanken = jankenDao.findById(tx, jankensCountBeforeTest + 1);
-            assertTrue(savedJanken.isPresent(), "じゃんけんが保存されていること");
+            val savedJankens = jankenDao.findAllOrderById(tx);
+            val savedJanken = savedJankens.get(savedJankens.size() - 1);
+            val savedJankenId = savedJanken.getId();
 
             // じゃんけん明細データの CSV の検証
             assertEquals(jankenDetailsCountBeforeTest + 2, jankenDetailDao.count(tx),
                     "じゃんけん明細が 2 行追加されたこと");
 
-            val expectedJankenDetail1Id = jankenDetailsCountBeforeTest + 1;
-            val expectedJankneDetail1 = new JankenDetail(
-                    expectedJankenDetail1Id,
-                    expectedJankenId,
-                    1L,
-                    Hand.of(player1HandValue),
-                    Result.of(player1ResultValue));
-            val savedJankenDetail1 = jankenDetailDao.findById(tx, expectedJankenDetail1Id);
-            assertEquals(expectedJankneDetail1, savedJankenDetail1.get(),
-                    "じゃんけん明細に追加された 1 件目の内容が想定通りであること");
+            // 自動採番されるid以外の値を検証
+            val savedJankenDetails = jankenDetailDao.findAllOrderById(tx);
 
-            val expectedJankenDetail2Id = jankenDetailsCountBeforeTest + 2;
-            val expectedJankneDetail2 = new JankenDetail(
-                    expectedJankenDetail2Id,
-                    expectedJankenId,
-                    2L,
-                    Hand.of(player2HandValue),
-                    Result.of(player2ResultValue));
-            val savedJankenDetail2 = jankenDetailDao.findById(tx, expectedJankenDetail2Id);
-            assertEquals(expectedJankneDetail2, savedJankenDetail2.get(),
-                    "じゃんけん明細に追加された 2 件目の内容が想定通りであること");
+            {
+                val expectedJankneDetail1 = savedJankenDetails.get(savedJankenDetails.size() - 2);
+                assertEquals(expectedJankneDetail1.getJankenId(), savedJankenId);
+                assertEquals(expectedJankneDetail1.getPlayerId(), PLAYER_1_ID);
+                assertEquals(expectedJankneDetail1.getHand().getValue(), player1HandValue);
+                assertEquals(expectedJankneDetail1.getResult().getValue(), player1ResultValue);
+            }
+
+            {
+                val expectedJankneDetail2 = savedJankenDetails.get(savedJankenDetails.size() - 1);
+                assertEquals(expectedJankneDetail2.getJankenId(), savedJankenId);
+                assertEquals(expectedJankneDetail2.getPlayerId(), PLAYER_2_ID);
+                assertEquals(expectedJankneDetail2.getHand().getValue(), player2HandValue);
+                assertEquals(expectedJankneDetail2.getResult().getValue(), player2ResultValue);
+            }
         });
     }
 

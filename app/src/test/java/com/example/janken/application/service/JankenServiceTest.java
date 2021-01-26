@@ -60,14 +60,20 @@ class JankenServiceTest {
 
 @NoArgsConstructor
 class JankenDetailErrorDao implements JankenDetailDao {
+
+    @Override
+    public List<JankenDetail> findAllOrderById(Transaction tx) {
+        throw new UnsupportedOperationException();
+    }
+
     @Override
     public Optional<JankenDetail> findById(Transaction tx, long id) {
-        return Optional.empty();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public long count(Transaction tx) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override

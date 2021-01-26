@@ -14,10 +14,21 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class JankenDetailCsvDao implements JankenDetailDao {
 
     private static final String JANKEN_DETAILS_CSV = CsvDaoUtils.DATA_DIR + "janken_details.csv";
+
+    @Override
+    public List<JankenDetail> findAllOrderById(Transaction tx) {
+        try (val stream = Files.lines(Paths.get(JANKEN_DETAILS_CSV), StandardCharsets.UTF_8)) {
+            return stream.map(this::line2JankenDetail)
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
 
     @Override
     public Optional<JankenDetail> findById(Transaction tx, long id) {

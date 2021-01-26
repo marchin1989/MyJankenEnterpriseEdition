@@ -17,13 +17,26 @@ import java.util.Optional;
 
 public class JankenDetailMySQLDao implements JankenDetailDao {
 
-    private static final String SELECT_WHERE_ID_EQUALS_QUERY = "SELECT id, janken_id, player_id, hand, result " +
-            "FROM janken_details " +
-            "WHERE id = ?";
+    private static final String SELECT_FROM_CLAUSE = "SELECT id, janken_id, player_id, hand, result " +
+            "FROM janken_details ";
+    private static final String SELECT_ORDER_BY_ID_QUERY = SELECT_FROM_CLAUSE + "ORDER BY id";
+    private static final String SELECT_WHERE_ID_EQUALS_QUERY = SELECT_FROM_CLAUSE + "WHERE id = ?";
     private static final String COUNT_QUERY = "SELECT COUNT(*) FROM janken_details";
     private static final String INSERT_COMMAND = "INSERT INTO janken_details (janken_id, player_id, hand, result) " +
             "VALUES ";
     private static final String INSERT_COMMAND_VALUE_CLAUSE = "(?, ?, ?, ?)";
+
+    @Override
+    public List<JankenDetail> findAllOrderById(Transaction tx) {
+        val conn = ((JdbcTransaction) tx).conn;
+        try (val stmt = conn.prepareStatement(SELECT_ORDER_BY_ID_QUERY)) {
+            try (val rs = stmt.executeQuery()) {
+                return resultSet2JankenDetails(rs);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public Optional<JankenDetail> findById(Transaction tx, long id) {
