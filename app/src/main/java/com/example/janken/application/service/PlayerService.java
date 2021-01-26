@@ -4,16 +4,15 @@ import com.example.janken.domain.dao.PlayerDao;
 import com.example.janken.domain.model.Player;
 import com.example.janken.domain.transaction.TransactionManager;
 import com.example.janken.registry.ServiceLocator;
-import lombok.val;
 
 public class PlayerService {
 
-    private TransactionManager tm = ServiceLocator.resolve(TransactionManager.class);
-    private PlayerDao playerDao = ServiceLocator.resolve(PlayerDao.class);
+    private final TransactionManager tm = ServiceLocator.resolve(TransactionManager.class);
+    private final PlayerDao playerDao = ServiceLocator.resolve(PlayerDao.class);
 
     public Player findPlayerById(long playerId) {
-        try (val tx = tm.startTransaction()) {
+        return tm.transactional(tx -> {
             return playerDao.findPlayerById(tx, playerId);
-        }
+        });
     }
 }

@@ -13,17 +13,17 @@ import java.util.Optional;
 
 public class JankenService {
 
-    private TransactionManager tm = ServiceLocator.resolve(TransactionManager.class);
+    private final TransactionManager tm = ServiceLocator.resolve(TransactionManager.class);
 
-    private JankenDao jankenDao = ServiceLocator.resolve(JankenDao.class);
-    private JankenDetailDao jankenDetailDao = ServiceLocator.resolve(JankenDetailDao.class);
+    private final JankenDao jankenDao = ServiceLocator.resolve(JankenDao.class);
+    private final JankenDetailDao jankenDetailDao = ServiceLocator.resolve(JankenDetailDao.class);
 
     /**
      * じゃんけんを実行し、勝者を返す。
      */
     public Optional<Player> play(Player player1, Hand player1Hand, Player player2, Hand player2Hand) {
 
-        try (val tx = tm.startTransaction()) {
+        return tm.transactional(tx -> {
             // 勝敗判定
 
             Result player1Result;
@@ -90,8 +90,6 @@ public class JankenService {
 
             jankenDetailDao.insertAll(tx, jankenDetails);
 
-            tx.commit();
-
             // 勝敗の表示
 
             Player winner = null;
@@ -102,6 +100,6 @@ public class JankenService {
             }
 
             return Optional.ofNullable(winner);
-        }
+        });
     }
 }

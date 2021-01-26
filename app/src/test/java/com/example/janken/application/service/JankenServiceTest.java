@@ -34,14 +34,13 @@ class JankenServiceTest {
         val jankenService = new JankenService();
         JankenDao jankenDao = ServiceLocator.resolve(JankenDao.class);
         val tm = ServiceLocator.resolve(TransactionManager.class);
-        Transaction tx = tm.startTransaction();
 
         val player1 = new Player(1L, "Alice");
         val player1Hand = Hand.STONE;
         val player2 = new Player(2L, "Bob");
         val player2Hand = Hand.PAPER;
 
-        val beforeJankenCount = jankenDao.count(tx);
+        val beforeJankenCount = tm.transactional(jankenDao::count);
 
         // 実行
         try {
@@ -54,7 +53,7 @@ class JankenServiceTest {
         }
 
         // 検証
-        val afterJankenCount = jankenDao.count(tx);
+        val afterJankenCount = tm.transactional(jankenDao::count);
         assertEquals(beforeJankenCount, afterJankenCount, "じゃんけんのデータが増えていない");
     }
 }

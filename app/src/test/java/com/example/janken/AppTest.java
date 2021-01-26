@@ -75,16 +75,11 @@ class AppTest {
 
         // 準備
 
-        long jankensCountBeforeTest;
-        long jankenDetailsCountBeforeTest;
-
         stdinSnatcher.inputLine(String.valueOf(player1HandValue));
         stdinSnatcher.inputLine(String.valueOf(player2HandValue));
 
-        try (val tx = tm.startTransaction()) {
-            jankensCountBeforeTest = jankenDao.count(tx);
-            jankenDetailsCountBeforeTest = jankenDetailDao.count(tx);
-        }
+        val jankensCountBeforeTest = tm.transactional(jankenDao::count);
+        val jankenDetailsCountBeforeTest = tm.transactional(jankenDetailDao::count);
 
         // 実行
 
@@ -93,7 +88,7 @@ class AppTest {
 
         // 検証
 
-        try (val tx = tm.startTransaction()) {
+        tm.transactional(tx -> {
 
             // 標準出力の検証
             var actualStdout = stdoutSnatcher.readAllLines();
@@ -143,7 +138,7 @@ class AppTest {
             val savedJankenDetail2 = jankenDetailDao.findById(tx, expectedJankenDetail2Id);
             assertEquals(expectedJankneDetail2, savedJankenDetail2.get(),
                     "じゃんけん明細に追加された 2 件目の内容が想定通りであること");
-        }
+        });
     }
 
     @ParameterizedTest
