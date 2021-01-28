@@ -4,65 +4,39 @@ import com.example.janken.domain.dao.JankenDao;
 import com.example.janken.domain.model.Janken;
 import com.example.janken.domain.transaction.Transaction;
 import com.example.janken.infrastructure.jdbctransaction.JdbcTransaction;
+import com.example.janken.infrastructure.jdbctransaction.SimpleJDBCWrapper;
+import com.example.janken.infrastructure.jdbctransaction.mapper.JankenRowMapper;
 import lombok.val;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class JankenMySQLDao implements JankenDao {
 
     private static final String SELECT_FROM_CLAUSE = "SELECT id, played_at FROM jankens ";
-    private static final String SELECT_ALL_ODER_BY_ID_QUERY = SELECT_FROM_CLAUSE + "ORDER BY id";
-    private static final String SELECT_WHERE_ID_EQUALS_QUERY = SELECT_FROM_CLAUSE + "WHERE id = ?";
     private static final String INSERT_COMMAND = "INSERT INTO jankens (played_at) VALUES (?)";
-    private static final String COUNT_QUERY = "SELECT COUNT(*) FROM jankens";
+
+    private final SimpleJDBCWrapper simpleJDBCWrapper = new SimpleJDBCWrapper();
+    private final JankenRowMapper mapper = new JankenRowMapper();
 
     @Override
     public List<Janken> findAllOrderById(Transaction tx) {
-        val conn = ((JdbcTransaction) tx).conn;
-        try (val stmt = conn.prepareStatement(SELECT_ALL_ODER_BY_ID_QUERY)) {
-            try (val rs = stmt.executeQuery()) {
-                return resultSet2Jankens(rs);
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        val sql = SELECT_FROM_CLAUSE + "ORDER BY id";
+        return simpleJDBCWrapper.findList(tx, mapper, sql);
     }
 
     @Override
     public Optional<Janken> findById(Transaction tx, long id) {
-        val conn = ((JdbcTransaction) tx).conn;
-        try (val stmt = conn.prepareStatement(SELECT_WHERE_ID_EQUALS_QUERY)) {
-
-            stmt.setLong(1, id);
-
-            try (val rs = stmt.executeQuery()) {
-                return resultSet2Jankens(rs).stream().findFirst();
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        val sql = SELECT_FROM_CLAUSE + "WHERE id = ?";
+        return simpleJDBCWrapper.findFirst(tx, mapper, sql, id);
     }
 
     @Override
     public long count(Transaction tx) {
-        val conn = ((JdbcTransaction) tx).conn;
-        try (val stmt = conn.prepareStatement(COUNT_QUERY)) {
-            try (val rs = stmt.executeQuery()) {
-                rs.next();
-                return rs.getLong(1);
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        return simpleJDBCWrapper.count(tx, "jankens");
     }
 
     @Override
@@ -80,19 +54,5 @@ public class JankenMySQLDao implements JankenDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private List<Janken> resultSet2Jankens(ResultSet rs) throws SQLException {
-        val jankens = new ArrayList<Janken>();
-        while (rs.next()) {
-            jankens.add(resultSet2Janken(rs));
-        }
-        return jankens;
-    }
-
-    private Janken resultSet2Janken(ResultSet rs) throws SQLException {
-        val id = rs.getLong("id");
-        val playedAt = rs.getTimestamp("played_at").toLocalDateTime();
-        return new Janken(id, playedAt);
     }
 }
