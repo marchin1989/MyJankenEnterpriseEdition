@@ -11,6 +11,6 @@ public class JankenRowMapper implements RowMapper<Janken> {
     public Janken map(ResultSet rs) throws SQLException {
         val id = rs.getLong("id");
         val playedAt = rs.getTimestamp("played_at").toLocalDateTime();
-        return new Janken(id, playedAt);
+        return new Janken(id, playedAt, null, null);
     }
 }
