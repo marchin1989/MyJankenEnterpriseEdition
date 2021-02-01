@@ -2,6 +2,7 @@ package com.example.janken.application.service;
 
 import com.example.janken.domain.dao.JankenDao;
 import com.example.janken.domain.dao.JankenDetailDao;
+import com.example.janken.domain.dao.PlayerDao;
 import com.example.janken.domain.model.Hand;
 import com.example.janken.domain.model.JankenDetail;
 import com.example.janken.domain.model.Player;
@@ -9,6 +10,7 @@ import com.example.janken.domain.transaction.Transaction;
 import com.example.janken.domain.transaction.TransactionManager;
 import com.example.janken.infrastructure.jdbctransaction.JdbcTransactionManager;
 import com.example.janken.infrastructure.mysqldao.JankenMySQLDao;
+import com.example.janken.infrastructure.mysqldao.PlayerMySQLDao;
 import com.example.janken.registry.ServiceLocator;
 import lombok.NoArgsConstructor;
 import lombok.val;
@@ -27,6 +29,7 @@ class JankenApplicationServiceTest {
         // 準備
 
         // 実際のMySQL(docker container)でテストする
+        ServiceLocator.register(PlayerDao.class, PlayerMySQLDao.class);
         ServiceLocator.register(JankenDao.class, JankenMySQLDao.class);
         ServiceLocator.register(JankenDetailDao.class, JankenDetailErrorDao.class);
         ServiceLocator.register(TransactionManager.class, JdbcTransactionManager.class);
