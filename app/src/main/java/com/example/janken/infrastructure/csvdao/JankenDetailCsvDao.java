@@ -1,10 +1,10 @@
 package com.example.janken.infrastructure.csvdao;
 
-import com.example.janken.domain.dao.JankenDetailDao;
-import com.example.janken.domain.model.Hand;
-import com.example.janken.domain.model.JankenDetail;
-import com.example.janken.domain.model.Result;
+import com.example.janken.domain.model.janken.Hand;
+import com.example.janken.domain.model.janken.JankenDetail;
+import com.example.janken.domain.model.janken.Result;
 import com.example.janken.domain.transaction.Transaction;
+import com.example.janken.infrastructure.dao.JankenDetailDao;
 import lombok.val;
 
 import java.io.*;
@@ -33,9 +33,22 @@ public class JankenDetailCsvDao implements JankenDetailDao {
     @Override
     public Optional<JankenDetail> findById(Transaction tx, long id) {
         try (val stream = Files.lines(Paths.get(JANKEN_DETAILS_CSV), StandardCharsets.UTF_8)) {
+            // TODO id順にする
             return stream.map(this::line2JankenDetail)
                     .filter(l -> l.getId() == id)
                     .findFirst();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    @Override
+    public List<JankenDetail> findByJankenIdOrderById(Transaction tx, long jankenId) {
+        try (val stream = Files.lines(Paths.get(JANKEN_DETAILS_CSV), StandardCharsets.UTF_8)) {
+            // TODO id順にする
+            return stream.map(this::line2JankenDetail)
+                    .filter(l -> l.getJankenId() == jankenId)
+                    .collect(Collectors.toList());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

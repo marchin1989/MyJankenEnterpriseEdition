@@ -2,14 +2,18 @@ package com.example.janken;
 
 import com.example.janken.application.service.JankenApplicationService;
 import com.example.janken.application.service.PlayerApplicationService;
-import com.example.janken.domain.dao.JankenDao;
-import com.example.janken.domain.dao.JankenDetailDao;
-import com.example.janken.domain.dao.PlayerDao;
+import com.example.janken.domain.model.janken.JankenRepository;
+import com.example.janken.domain.model.player.PlayerRepository;
 import com.example.janken.domain.transaction.TransactionManager;
+import com.example.janken.infrastructure.dao.JankenDao;
+import com.example.janken.infrastructure.dao.JankenDetailDao;
+import com.example.janken.infrastructure.dao.PlayerDao;
 import com.example.janken.infrastructure.jdbctransaction.JdbcTransactionManager;
 import com.example.janken.infrastructure.mysqldao.JankenDetailMySQLDao;
 import com.example.janken.infrastructure.mysqldao.JankenMySQLDao;
 import com.example.janken.infrastructure.mysqldao.PlayerMySQLDao;
+import com.example.janken.infrastructure.mysqlrepository.JankenMySQLRepository;
+import com.example.janken.infrastructure.mysqlrepository.PlayerMySQLRepository;
 import com.example.janken.presentation.controller.JankenController;
 import com.example.janken.registry.ServiceLocator;
 
@@ -29,6 +33,9 @@ public class App {
         ServiceLocator.register(PlayerDao.class, PlayerMySQLDao.class);
         ServiceLocator.register(JankenDao.class, JankenMySQLDao.class);
         ServiceLocator.register(JankenDetailDao.class, JankenDetailMySQLDao.class);
+
+        ServiceLocator.register(PlayerRepository.class, PlayerMySQLRepository.class);
+        ServiceLocator.register(JankenRepository.class, JankenMySQLRepository.class);
 
         // 実行
 

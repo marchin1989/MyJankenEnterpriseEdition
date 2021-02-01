@@ -1,8 +1,7 @@
-package com.example.janken.domain.dao;
+package com.example.janken.domain.model.player;
 
-import com.example.janken.domain.model.Player;
 import com.example.janken.domain.transaction.Transaction;
 
-public interface PlayerDao {
+public interface PlayerRepository {
     Player findPlayerById(Transaction tx, long playerId);
 }

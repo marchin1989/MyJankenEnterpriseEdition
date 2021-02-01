@@ -1,16 +1,20 @@
 package com.example.janken.application.service;
 
-import com.example.janken.domain.dao.JankenDao;
-import com.example.janken.domain.dao.JankenDetailDao;
-import com.example.janken.domain.dao.PlayerDao;
-import com.example.janken.domain.model.Hand;
-import com.example.janken.domain.model.JankenDetail;
-import com.example.janken.domain.model.Player;
+import com.example.janken.domain.model.janken.Hand;
+import com.example.janken.domain.model.janken.JankenDetail;
+import com.example.janken.domain.model.janken.JankenRepository;
+import com.example.janken.domain.model.player.Player;
+import com.example.janken.domain.model.player.PlayerRepository;
 import com.example.janken.domain.transaction.Transaction;
 import com.example.janken.domain.transaction.TransactionManager;
+import com.example.janken.infrastructure.dao.JankenDao;
+import com.example.janken.infrastructure.dao.JankenDetailDao;
+import com.example.janken.infrastructure.dao.PlayerDao;
 import com.example.janken.infrastructure.jdbctransaction.JdbcTransactionManager;
 import com.example.janken.infrastructure.mysqldao.JankenMySQLDao;
 import com.example.janken.infrastructure.mysqldao.PlayerMySQLDao;
+import com.example.janken.infrastructure.mysqlrepository.JankenMySQLRepository;
+import com.example.janken.infrastructure.mysqlrepository.PlayerMySQLRepository;
 import com.example.janken.registry.ServiceLocator;
 import lombok.NoArgsConstructor;
 import lombok.val;
@@ -33,9 +37,11 @@ class JankenApplicationServiceTest {
         ServiceLocator.register(JankenDao.class, JankenMySQLDao.class);
         ServiceLocator.register(JankenDetailDao.class, JankenDetailErrorDao.class);
         ServiceLocator.register(TransactionManager.class, JdbcTransactionManager.class);
+        ServiceLocator.register(PlayerRepository.class, PlayerMySQLRepository.class);
+        ServiceLocator.register(JankenRepository.class, JankenMySQLRepository.class);
 
         val jankenService = new JankenApplicationService();
-        JankenDao jankenDao = ServiceLocator.resolve(JankenDao.class);
+        JankenRepository jankenRepository = ServiceLocator.resolve(JankenRepository.class);
         val tm = ServiceLocator.resolve(TransactionManager.class);
 
         val player1 = new Player(1L, "Alice");
@@ -43,7 +49,7 @@ class JankenApplicationServiceTest {
         val player2 = new Player(2L, "Bob");
         val player2Hand = Hand.PAPER;
 
-        val beforeJankenCount = tm.transactional(jankenDao::count);
+        val beforeJankenCount = tm.transactional(jankenRepository::count);
 
         // 実行
         try {
@@ -56,7 +62,7 @@ class JankenApplicationServiceTest {
         }
 
         // 検証
-        val afterJankenCount = tm.transactional(jankenDao::count);
+        val afterJankenCount = tm.transactional(jankenRepository::count);
         assertEquals(beforeJankenCount, afterJankenCount, "じゃんけんのデータが増えていない");
     }
 }
@@ -71,6 +77,11 @@ class JankenDetailErrorDao implements JankenDetailDao {
 
     @Override
     public Optional<JankenDetail> findById(Transaction tx, long id) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<JankenDetail> findByJankenIdOrderById(Transaction tx, long jankenId) {
         throw new UnsupportedOperationException();
     }
 

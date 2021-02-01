@@ -1,8 +1,8 @@
 package com.example.janken.infrastructure.mysqldao;
 
-import com.example.janken.domain.dao.PlayerDao;
-import com.example.janken.domain.model.Player;
+import com.example.janken.domain.model.player.Player;
 import com.example.janken.domain.transaction.Transaction;
+import com.example.janken.infrastructure.dao.PlayerDao;
 import com.example.janken.infrastructure.jdbctransaction.SimpleJDBCWrapper;
 import com.example.janken.infrastructure.jdbctransaction.mapper.PlayerRowMapper;
 import lombok.val;

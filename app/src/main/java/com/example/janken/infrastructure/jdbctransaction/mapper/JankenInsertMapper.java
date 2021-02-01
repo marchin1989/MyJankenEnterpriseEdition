@@ -1,7 +1,7 @@
 package com.example.janken.infrastructure.jdbctransaction.mapper;
 
-import com.example.janken.domain.model.Janken;
-import com.example.janken.domain.model.JankenDetail;
+import com.example.janken.domain.model.janken.Janken;
+import com.example.janken.domain.model.janken.JankenDetail;
 import lombok.val;
 
 import java.sql.Timestamp;

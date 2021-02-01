@@ -1,6 +1,6 @@
-package com.example.janken.domain.dao;
+package com.example.janken.infrastructure.dao;
 
-import com.example.janken.domain.model.Janken;
+import com.example.janken.domain.model.janken.Janken;
 import com.example.janken.domain.transaction.Transaction;
 
 import java.util.List;

@@ -1,8 +1,8 @@
 package com.example.janken.infrastructure.mysqldao;
 
-import com.example.janken.domain.dao.JankenDetailDao;
-import com.example.janken.domain.model.JankenDetail;
+import com.example.janken.domain.model.janken.JankenDetail;
 import com.example.janken.domain.transaction.Transaction;
+import com.example.janken.infrastructure.dao.JankenDetailDao;
 import com.example.janken.infrastructure.jdbctransaction.SimpleJDBCWrapper;
 import com.example.janken.infrastructure.jdbctransaction.mapper.InsertMapper;
 import com.example.janken.infrastructure.jdbctransaction.mapper.JankenDetailInsertMapper;
@@ -36,6 +36,12 @@ public class JankenDetailMySQLDao implements JankenDetailDao {
     public Optional<JankenDetail> findById(Transaction tx, long id) {
         val sql = SELECT_FROM_CLAUSE + "WHERE id = ?";
         return simpleJDBCWrapper.findFirst(tx, rowMapper, sql, id);
+    }
+
+    @Override
+    public List<JankenDetail> findByJankenIdOrderById(Transaction tx, long jankenId) {
+        val sql = SELECT_FROM_CLAUSE + "WHERE janken_id = ? ORDER BY id";
+        return simpleJDBCWrapper.findList(tx, rowMapper, sql, jankenId);
     }
 
     @Override

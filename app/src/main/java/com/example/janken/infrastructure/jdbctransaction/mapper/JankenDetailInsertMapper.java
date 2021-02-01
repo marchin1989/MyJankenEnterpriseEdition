@@ -1,6 +1,6 @@
 package com.example.janken.infrastructure.jdbctransaction.mapper;
 
-import com.example.janken.domain.model.JankenDetail;
+import com.example.janken.domain.model.janken.JankenDetail;
 import lombok.val;
 
 import java.util.ArrayList;

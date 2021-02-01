@@ -1,25 +1,22 @@
 package com.example.janken.application.service;
 
-import com.example.janken.domain.dao.JankenDao;
-import com.example.janken.domain.dao.JankenDetailDao;
-import com.example.janken.domain.dao.PlayerDao;
-import com.example.janken.domain.model.Hand;
-import com.example.janken.domain.model.Janken;
-import com.example.janken.domain.model.Player;
+import com.example.janken.domain.model.janken.Hand;
+import com.example.janken.domain.model.janken.Janken;
+import com.example.janken.domain.model.janken.JankenRepository;
+import com.example.janken.domain.model.player.Player;
+import com.example.janken.domain.model.player.PlayerRepository;
 import com.example.janken.domain.transaction.TransactionManager;
 import com.example.janken.registry.ServiceLocator;
 import lombok.val;
 
-import java.util.List;
 import java.util.Optional;
 
 public class JankenApplicationService {
 
     private final TransactionManager tm = ServiceLocator.resolve(TransactionManager.class);
 
-    private final JankenDao jankenDao = ServiceLocator.resolve(JankenDao.class);
-    private final JankenDetailDao jankenDetailDao = ServiceLocator.resolve(JankenDetailDao.class);
-    private final PlayerDao playerDao = ServiceLocator.resolve(PlayerDao.class);
+    private final PlayerRepository playerRepository = ServiceLocator.resolve(PlayerRepository.class);
+    private final JankenRepository jankenRepository = ServiceLocator.resolve(JankenRepository.class);
 
     /**
      * じゃんけんを実行し、勝者を返す。
@@ -32,14 +29,12 @@ public class JankenApplicationService {
             val janken = Janken.play(player1, player1Hand, player2, player2Hand);
 
             // じゃんけんとじゃんけん明細を保存
-
-            val jankenWithId = jankenDao.insert(tx, janken);
-            jankenDetailDao.insertAll(tx, List.of(jankenWithId.getJankenDetail1(), jankenWithId.getJankenDetail2()));
+            val jankenWithId = jankenRepository.save(tx, janken);
 
             // 勝敗を返却
 
             return jankenWithId.winnerPlayerId()
-                    .map(id -> playerDao.findPlayerById(tx, id));
+                    .map(id -> playerRepository.findPlayerById(tx, id));
         });
     }
 }

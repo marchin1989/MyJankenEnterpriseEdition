@@ -1,8 +1,8 @@
 package com.example.janken.infrastructure.jdbctransaction.mapper;
 
-import com.example.janken.domain.model.Hand;
-import com.example.janken.domain.model.JankenDetail;
-import com.example.janken.domain.model.Result;
+import com.example.janken.domain.model.janken.Hand;
+import com.example.janken.domain.model.janken.JankenDetail;
+import com.example.janken.domain.model.janken.Result;
 import lombok.val;
 
 import java.sql.ResultSet;

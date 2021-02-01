@@ -1,8 +1,10 @@
-package com.example.janken.domain.model;
+package com.example.janken.domain.model.janken;
 
+import com.example.janken.domain.model.player.Player;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -42,6 +44,11 @@ public class Janken {
         return new Janken(null, playedAt, jankenDetail1, jankenDetail2);
     }
 
+    private Long id;
+    private LocalDateTime playedAt;
+    private JankenDetail jankenDetail1;
+    private JankenDetail jankenDetail2;
+
     public Optional<Long> winnerPlayerId() {
         if (jankenDetail1.isResultWin()) {
             return Optional.of(jankenDetail1.getPlayerId());
@@ -52,8 +59,7 @@ public class Janken {
         }
     }
 
-    private Long id;
-    private LocalDateTime playedAt;
-    private JankenDetail jankenDetail1;
-    private JankenDetail jankenDetail2;
+    public List<JankenDetail> details() {
+        return List.of(jankenDetail1, jankenDetail2);
+    }
 }
