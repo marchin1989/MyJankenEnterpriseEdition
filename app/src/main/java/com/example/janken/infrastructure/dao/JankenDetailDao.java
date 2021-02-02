@@ -10,11 +10,11 @@ public interface JankenDetailDao {
 
     List<JankenDetail> findAllOrderById(Transaction tx);
 
-    Optional<JankenDetail> findById(Transaction tx, long id);
+    Optional<JankenDetail> findById(Transaction tx, String id);
 
-    List<JankenDetail> findByJankenIdOrderById(Transaction tx, long jankenId);
+    List<JankenDetail> findByJankenIdOrderById(Transaction tx, String jankenId);
 
     long count(Transaction t);
 
-    List<JankenDetail> insertAll(Transaction tx, List<JankenDetail> jankenDetails);
+    void insertAll(Transaction tx, List<JankenDetail> jankenDetails);
 }

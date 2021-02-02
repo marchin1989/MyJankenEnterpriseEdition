@@ -14,8 +14,8 @@ import java.util.Scanner;
 public class JankenController {
 
     // ID は実際のアプリケーションでは認証情報から取得することが想定される
-    private static final long PLAYER_1_ID = 1;
-    private static final long PLAYER_2_ID = 2;
+    private static final String PLAYER_1_ID = "1";
+    private static final String PLAYER_2_ID = "2";
 
     // 入力スキャナ
 
@@ -37,7 +37,7 @@ public class JankenController {
         showHandWithName(player1Hand, player1);
         showHandWithName(player2Hand, player2);
 
-        val maybeWinner = jankenApplicationService.play(player1, player1Hand, player2, player2Hand);
+        val maybeWinner = jankenApplicationService.play(player1.getId(), player1Hand, player2.getId(), player2Hand);
 
         new View(VIEW_RESOURCE_PREFIX + "result.vm")
                 .with("winner", maybeWinner.orElse(null))

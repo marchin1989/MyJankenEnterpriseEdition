@@ -9,21 +9,13 @@ import java.util.List;
 public class JankenDetailInsertMapper implements InsertMapper<JankenDetail> {
 
     @Override
-    public List<Object> mapValues(JankenDetail entity) {
+    public List<Object> mapValues(JankenDetail detail) {
         val list = new ArrayList<>();
-        list.add(entity.getJankenId());
-        list.add(entity.getPlayerId());
-        list.add(entity.getHand().getValue());
-        list.add(entity.getResult().getValue());
+        list.add(detail.getId());
+        list.add(detail.getJankenId());
+        list.add(detail.getPlayerId());
+        list.add(detail.getHand().getValue());
+        list.add(detail.getResult().getValue());
         return list;
-    }
-
-    @Override
-    public JankenDetail mapObjectWithKey(long key, JankenDetail objectWithoutKey) {
-        return new JankenDetail(key,
-                objectWithoutKey.getJankenId(),
-                objectWithoutKey.getPlayerId(),
-                objectWithoutKey.getHand(),
-                objectWithoutKey.getResult());
     }
 }

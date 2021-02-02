@@ -21,19 +21,18 @@ public class JankenApplicationService {
     /**
      * じゃんけんを実行し、勝者を返す。
      */
-    public Optional<Player> play(Player player1, Hand player1Hand, Player player2, Hand player2Hand) {
+    public Optional<Player> play(String player1Id, Hand player1Hand, String player2Id, Hand player2Hand) {
 
         return tm.transactional(tx -> {
 
             // じゃんけんを実行
-            val janken = Janken.play(player1, player1Hand, player2, player2Hand);
+            val janken = Janken.play(player1Id, player1Hand, player2Id, player2Hand);
 
             // じゃんけんとじゃんけん明細を保存
-            val jankenWithId = jankenRepository.save(tx, janken);
+            jankenRepository.save(tx, janken);
 
             // 勝敗を返却
-
-            return jankenWithId.winnerPlayerId()
+            return janken.winnerPlayerId()
                     .map(id -> playerRepository.findPlayerById(tx, id));
         });
     }

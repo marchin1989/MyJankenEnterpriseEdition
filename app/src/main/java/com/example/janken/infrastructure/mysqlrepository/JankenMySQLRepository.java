@@ -18,8 +18,8 @@ public class JankenMySQLRepository implements JankenRepository {
     private final JankenDetailDao jankenDetailDao = ServiceLocator.resolve(JankenDetailDao.class);
 
     @Override
-    public List<Janken> findAllOrderById(Transaction tx) {
-        val jankensWithoutJankenDetail = jankenDao.findAllOrderById(tx);
+    public List<Janken> findAllOrderByPlayedAt(Transaction tx) {
+        val jankensWithoutJankenDetail = jankenDao.findAllOrderByPlayedAt(tx);
         val jankenDetails = jankenDetailDao.findAllOrderById(tx);
 
         return jankensWithoutJankenDetail.stream()
@@ -38,7 +38,7 @@ public class JankenMySQLRepository implements JankenRepository {
     }
 
     @Override
-    public Optional<Janken> findById(Transaction tx, long id) {
+    public Optional<Janken> findById(Transaction tx, String id) {
         val jankenWithoutJankenDetail = jankenDao.findById(tx, id);
         return jankenWithoutJankenDetail.stream()
                 .findFirst()
@@ -58,15 +58,8 @@ public class JankenMySQLRepository implements JankenRepository {
     }
 
     @Override
-    public Janken save(Transaction tx, Janken janken) {
-        val jankenWithId = jankenDao.insert(tx, janken);
-        jankenWithId.details();
-        val jankenDetailsWithId = jankenDetailDao.insertAll(tx, jankenWithId.details());
-        return new Janken(
-                jankenWithId.getId(),
-                jankenWithId.getPlayedAt(),
-                jankenDetailsWithId.get(0),
-                jankenDetailsWithId.get(1)
-        );
+    public void save(Transaction tx, Janken janken) {
+        jankenDao.insert(tx, janken);
+        jankenDetailDao.insertAll(tx, janken.details());
     }
 }

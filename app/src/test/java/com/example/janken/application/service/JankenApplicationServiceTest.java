@@ -44,16 +44,16 @@ class JankenApplicationServiceTest {
         JankenRepository jankenRepository = ServiceLocator.resolve(JankenRepository.class);
         val tm = ServiceLocator.resolve(TransactionManager.class);
 
-        val player1 = new Player(1L, "Alice");
+        val player1 = new Player("1", "Alice");
         val player1Hand = Hand.STONE;
-        val player2 = new Player(2L, "Bob");
+        val player2 = new Player("2", "Bob");
         val player2Hand = Hand.PAPER;
 
         val beforeJankenCount = tm.transactional(jankenRepository::count);
 
         // 実行
         try {
-            jankenService.play(player1, player1Hand, player2, player2Hand);
+            jankenService.play(player1.getId(), player1Hand, player2.getId(), player2Hand);
 
             // 例外が発生しない場合は、テスト失敗
             fail();
@@ -76,12 +76,12 @@ class JankenDetailErrorDao implements JankenDetailDao {
     }
 
     @Override
-    public Optional<JankenDetail> findById(Transaction tx, long id) {
+    public Optional<JankenDetail> findById(Transaction tx, String id) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<JankenDetail> findByJankenIdOrderById(Transaction tx, long jankenId) {
+    public List<JankenDetail> findByJankenIdOrderById(Transaction tx, String jankenId) {
         throw new UnsupportedOperationException();
     }
 
@@ -91,7 +91,7 @@ class JankenDetailErrorDao implements JankenDetailDao {
     }
 
     @Override
-    public List<JankenDetail> insertAll(Transaction t, List<JankenDetail> jankenDetails) {
+    public void insertAll(Transaction t, List<JankenDetail> jankenDetails) {
         throw new UnsupportedOperationException();
     }
 }

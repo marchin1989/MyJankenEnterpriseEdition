@@ -9,7 +9,7 @@ import java.sql.SQLException;
 public class JankenRowMapper implements RowMapper<Janken> {
     @Override
     public Janken map(ResultSet rs) throws SQLException {
-        val id = rs.getLong("id");
+        val id = rs.getString("id");
         val playedAt = rs.getTimestamp("played_at").toLocalDateTime();
         return new Janken(id, playedAt, null, null);
     }

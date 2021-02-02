@@ -10,7 +10,7 @@ public class PlayerApplicationService {
     private final TransactionManager tm = ServiceLocator.resolve(TransactionManager.class);
     private final PlayerRepository playerRepository = ServiceLocator.resolve(PlayerRepository.class);
 
-    public Player findPlayerById(long playerId) {
+    public Player findPlayerById(String playerId) {
         return tm.transactional(tx -> {
             return playerRepository.findPlayerById(tx, playerId);
         });

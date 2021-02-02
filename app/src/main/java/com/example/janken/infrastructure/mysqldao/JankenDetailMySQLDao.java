@@ -10,7 +10,6 @@ import com.example.janken.infrastructure.jdbctransaction.mapper.JankenDetailRowM
 import com.example.janken.infrastructure.jdbctransaction.mapper.RowMapper;
 import lombok.val;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,9 +17,9 @@ public class JankenDetailMySQLDao implements JankenDetailDao {
 
     private static final String SELECT_FROM_CLAUSE = "SELECT id, janken_id, player_id, hand, result " +
             "FROM janken_details ";
-    private static final String INSERT_COMMAND = "INSERT INTO janken_details (janken_id, player_id, hand, result) " +
+    private static final String INSERT_COMMAND = "INSERT INTO janken_details (id, janken_id, player_id, hand, result) " +
             "VALUES ";
-    private static final String INSERT_COMMAND_VALUE_CLAUSE = "(?, ?, ?, ?)";
+    private static final String INSERT_COMMAND_VALUE_CLAUSE = "(?, ?, ?, ?, ?)";
 
     private final SimpleJDBCWrapper simpleJDBCWrapper = new SimpleJDBCWrapper();
     private final RowMapper<JankenDetail> rowMapper = new JankenDetailRowMapper();
@@ -33,13 +32,13 @@ public class JankenDetailMySQLDao implements JankenDetailDao {
     }
 
     @Override
-    public Optional<JankenDetail> findById(Transaction tx, long id) {
+    public Optional<JankenDetail> findById(Transaction tx, String id) {
         val sql = SELECT_FROM_CLAUSE + "WHERE id = ?";
         return simpleJDBCWrapper.findFirst(tx, rowMapper, sql, id);
     }
 
     @Override
-    public List<JankenDetail> findByJankenIdOrderById(Transaction tx, long jankenId) {
+    public List<JankenDetail> findByJankenIdOrderById(Transaction tx, String jankenId) {
         val sql = SELECT_FROM_CLAUSE + "WHERE janken_id = ? ORDER BY id";
         return simpleJDBCWrapper.findList(tx, rowMapper, sql, jankenId);
     }
@@ -50,9 +49,9 @@ public class JankenDetailMySQLDao implements JankenDetailDao {
     }
 
     @Override
-    public List<JankenDetail> insertAll(Transaction tx, List<JankenDetail> jankenDetails) {
+    public void insertAll(Transaction tx, List<JankenDetail> jankenDetails) {
         if (jankenDetails.isEmpty()) {
-            return new ArrayList<>();
+            return;
         }
 
         val sql = INSERT_COMMAND + jankenDetails.stream()
@@ -60,6 +59,6 @@ public class JankenDetailMySQLDao implements JankenDetailDao {
                 .reduce((l, r) -> l + "," + r)
                 .get();
 
-        return simpleJDBCWrapper.insertAllAndReturnWithKey(tx, insertMapper, sql, jankenDetails);
+        simpleJDBCWrapper.insertAll(tx, insertMapper, sql, jankenDetails);
     }
 }

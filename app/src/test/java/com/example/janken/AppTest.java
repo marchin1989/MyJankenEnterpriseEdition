@@ -3,12 +3,14 @@
  */
 package com.example.janken;
 
+import com.example.janken.domain.model.janken.JankenRepository;
 import com.example.janken.domain.transaction.TransactionManager;
 import com.example.janken.infrastructure.dao.JankenDao;
 import com.example.janken.infrastructure.dao.JankenDetailDao;
 import com.example.janken.infrastructure.jdbctransaction.JdbcTransactionManager;
 import com.example.janken.infrastructure.mysqldao.JankenDetailMySQLDao;
 import com.example.janken.infrastructure.mysqldao.JankenMySQLDao;
+import com.example.janken.registry.ServiceLocator;
 import lombok.val;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -23,8 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AppTest {
 
-    private static final long PLAYER_1_ID = 1;
-    private static final long PLAYER_2_ID = 2;
+    private static final String PLAYER_1_ID = "1";
+    private static final String PLAYER_2_ID = "2";
 
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
@@ -106,33 +108,40 @@ class AppTest {
             ));
             assertEquals(expectedStdout, actualStdout, "標準出力の内容が想定通りであること");
 
-            // じゃんけんデータの CSV の検証
+            // じゃんけんデータの検証
             assertEquals(jankensCountBeforeTest + 1, jankenDao.count(tx), "じゃんけんが 1 件追加されたこと");
-            val savedJankens = jankenDao.findAllOrderById(tx);
+            val jankenRepository = ServiceLocator.resolve(JankenRepository.class);
+            val savedJankens = jankenRepository.findAllOrderByPlayedAt(tx);
             val savedJanken = savedJankens.get(savedJankens.size() - 1);
             val savedJankenId = savedJanken.getId();
 
-            // じゃんけん明細データの CSV の検証
+            // じゃんけん明細データの検証
             assertEquals(jankenDetailsCountBeforeTest + 2, jankenDetailDao.count(tx),
                     "じゃんけん明細が 2 行追加されたこと");
 
-            // 自動採番されるid以外の値を検証
-            val savedJankenDetails = jankenDetailDao.findAllOrderById(tx);
+            // 採番されるid以外の値を検証
+            val savedJankenDetails = savedJanken.details();
 
             {
-                val expectedJankneDetail1 = savedJankenDetails.get(savedJankenDetails.size() - 2);
-                assertEquals(expectedJankneDetail1.getJankenId(), savedJankenId);
-                assertEquals(expectedJankneDetail1.getPlayerId(), PLAYER_1_ID);
-                assertEquals(expectedJankneDetail1.getHand().getValue(), player1HandValue);
-                assertEquals(expectedJankneDetail1.getResult().getValue(), player1ResultValue);
+                val savedPlayer1JankenDetail = savedJankenDetails.stream()
+                        .filter(jd -> jd.getPlayerId().equals(PLAYER_1_ID))
+                        .findFirst()
+                        .get();
+                assertEquals(savedJankenId, savedPlayer1JankenDetail.getJankenId());
+                assertEquals(PLAYER_1_ID, savedPlayer1JankenDetail.getPlayerId());
+                assertEquals(player1HandValue, savedPlayer1JankenDetail.getHand().getValue());
+                assertEquals(player1ResultValue, savedPlayer1JankenDetail.getResult().getValue());
             }
 
             {
-                val expectedJankneDetail2 = savedJankenDetails.get(savedJankenDetails.size() - 1);
-                assertEquals(expectedJankneDetail2.getJankenId(), savedJankenId);
-                assertEquals(expectedJankneDetail2.getPlayerId(), PLAYER_2_ID);
-                assertEquals(expectedJankneDetail2.getHand().getValue(), player2HandValue);
-                assertEquals(expectedJankneDetail2.getResult().getValue(), player2ResultValue);
+                val savedPlayer2JankenDetail = savedJankenDetails.stream()
+                        .filter(jd -> jd.getPlayerId().equals(PLAYER_2_ID))
+                        .findFirst()
+                        .get();
+                assertEquals(savedJankenId, savedPlayer2JankenDetail.getJankenId());
+                assertEquals(PLAYER_2_ID, savedPlayer2JankenDetail.getPlayerId());
+                assertEquals(player2HandValue, savedPlayer2JankenDetail.getHand().getValue());
+                assertEquals(player2ResultValue, savedPlayer2JankenDetail.getResult().getValue());
             }
         });
     }

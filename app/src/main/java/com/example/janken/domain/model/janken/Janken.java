@@ -1,11 +1,11 @@
 package com.example.janken.domain.model.janken;
 
-import com.example.janken.domain.model.player.Player;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @AllArgsConstructor
 @Getter
@@ -13,9 +13,9 @@ import java.util.Optional;
 @ToString
 public class Janken {
 
-    public static Janken play(Player player1,
+    public static Janken play(String player1Id,
                               Hand hand1,
-                              Player player2,
+                              String player2Id,
                               Hand hand2) {
         // 勝敗判定
 
@@ -33,23 +33,32 @@ public class Janken {
             player2Result = Result.DRAW;
         }
 
+        // idを生成
+        val jankenId = generateId();
+        val jankenDetail1Id = generateId();
+        val jankenDetail2Id = generateId();
+
         // じゃんけん明細を生成
 
-        val jankenDetail1 = new JankenDetail(null, null, player1.getId(), hand1, player1Result);
-        val jankenDetail2 = new JankenDetail(null, null, player2.getId(), hand2, player2Result);
+        val jankenDetail1 = new JankenDetail(jankenDetail1Id, jankenId, player1Id, hand1, player1Result);
+        val jankenDetail2 = new JankenDetail(jankenDetail2Id, jankenId, player2Id, hand2, player2Result);
 
         // じゃんけんを生成
 
         val playedAt = LocalDateTime.now();
-        return new Janken(null, playedAt, jankenDetail1, jankenDetail2);
+        return new Janken(jankenId, playedAt, jankenDetail1, jankenDetail2);
     }
 
-    private Long id;
+    private static String generateId() {
+        return UUID.randomUUID().toString();
+    }
+
+    private String id;
     private LocalDateTime playedAt;
     private JankenDetail jankenDetail1;
     private JankenDetail jankenDetail2;
 
-    public Optional<Long> winnerPlayerId() {
+    public Optional<String> winnerPlayerId() {
         if (jankenDetail1.isResultWin()) {
             return Optional.of(jankenDetail1.getPlayerId());
         } else if (jankenDetail2.isResultWin()) {

@@ -14,7 +14,7 @@ public class PlayerMySQLDao implements PlayerDao {
     private final PlayerRowMapper mapper = new PlayerRowMapper();
 
     @Override
-    public Player findPlayerById(Transaction tx, long playerId) {
+    public Player findPlayerById(Transaction tx, String playerId) {
         val sql = SELECT_FROM_CLAUSE + "WHERE id = ?";
         return simpleJDBCWrapper.findFirst(tx, mapper, sql, playerId).get();
     }

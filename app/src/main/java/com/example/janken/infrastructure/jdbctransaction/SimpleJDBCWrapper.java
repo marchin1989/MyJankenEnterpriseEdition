@@ -9,7 +9,6 @@ import lombok.val;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -46,33 +45,29 @@ public class SimpleJDBCWrapper {
     }
 
     /**
-     * 与えられたEntityのリストをDBに追加し、生成されたidをつけてEntityで返す.
+     * 与えられたオブジェクトのリストをDBに追加.
      */
-    public <T> List<T> insertAllAndReturnWithKey(Transaction tx,
-                                                 InsertMapper<T> mapper,
-                                                 String sql,
-                                                 List<T> objects) {
+    public <T> void insertAll(Transaction tx,
+                              InsertMapper<T> mapper,
+                              String sql,
+                              List<T> objects) {
         val conn = ((JdbcTransaction) tx).conn;
-        try (val stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (val stmt = conn.prepareStatement(sql)) {
             val values = objects.stream()
                     .flatMap(obj -> mapper.mapValues(obj).stream())
                     .toArray();
             setParams(stmt, values);
             stmt.executeUpdate();
-
-            try (val rs = stmt.getGeneratedKeys()) {
-                return resultSet2ObjectsWithKey(rs, mapper, objects);
-            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public <T> T insertAndReturnWithKey(Transaction tx,
-                                        InsertMapper<T> mapper,
-                                        String sql,
-                                        T object) {
-        return insertAllAndReturnWithKey(tx, mapper, sql, List.of(object)).get(0);
+    public <T> void insertOne(Transaction tx,
+                              InsertMapper<T> mapper,
+                              String sql,
+                              T object) {
+        insertAll(tx, mapper, sql, List.of(object));
     }
 
     private void setParams(PreparedStatement stmt, Object... params) throws SQLException {
@@ -87,15 +82,5 @@ public class SimpleJDBCWrapper {
             list.add(mapper.map(rs));
         }
         return list;
-    }
-
-    private <T> List<T> resultSet2ObjectsWithKey(ResultSet rs, InsertMapper<T> mapper, List<T> objects) throws SQLException {
-        val objectsWithKey = new ArrayList<T>();
-        for (T entity : objects) {
-            rs.next();
-            val id = rs.getLong(1);
-            objectsWithKey.add(mapper.mapObjectWithKey(id, entity));
-        }
-        return objectsWithKey;
     }
 }
