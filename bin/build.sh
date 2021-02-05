@@ -88,7 +88,6 @@ main() {
   # ビルド
   "${PROJECT_HOME}/gradlew" \
     clean \
-    dependencyCheckAnalyze \
     build
 
   # JAR の状態での実行をテスト
