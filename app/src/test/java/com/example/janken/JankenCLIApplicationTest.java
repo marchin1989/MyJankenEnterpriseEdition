@@ -23,7 +23,7 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class AppTest {
+class JankenCLIApplicationTest {
 
     private static final String PLAYER_1_ID = "1";
     private static final String PLAYER_2_ID = "2";
@@ -85,7 +85,7 @@ class AppTest {
         // 実行
 
         String[] args = new String[0];
-        App.main(args);
+        JankenCLIApplication.main(args);
 
         // 検証
 
@@ -164,7 +164,7 @@ class AppTest {
         stdinSnatcher.inputLine(validInput1);
         stdinSnatcher.inputLine(validInput2);
         String[] args = new String[0];
-        App.main(args);
+        JankenCLIApplication.main(args);
 
         var actual = stdoutSnatcher.readAllLines();
         var expected = String.join(LINE_SEPARATOR, Arrays.asList(
