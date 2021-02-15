@@ -6,14 +6,22 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+
 @AllArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
 class JankenPostRequestBody {
+    @NotBlank
     private final String player1Id;
+    @NotNull
     private final int player1Hand;
+    @NotBlank
     private final String player2Id;
+    @NotNull
     private final int player2Hand;
 
     Hand player1Hand() {
