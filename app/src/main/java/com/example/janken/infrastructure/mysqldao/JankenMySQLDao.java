@@ -9,10 +9,12 @@ import com.example.janken.infrastructure.jdbctransaction.mapper.JankenInsertMapp
 import com.example.janken.infrastructure.jdbctransaction.mapper.JankenRowMapper;
 import com.example.janken.infrastructure.jdbctransaction.mapper.RowMapper;
 import lombok.val;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class JankenMySQLDao implements JankenDao {
 
     private static final String SELECT_FROM_CLAUSE = "SELECT id, played_at FROM jankens ";

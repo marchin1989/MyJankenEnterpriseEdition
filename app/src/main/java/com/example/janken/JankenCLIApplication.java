@@ -2,20 +2,14 @@ package com.example.janken;
 
 import com.example.janken.application.service.JankenApplicationService;
 import com.example.janken.application.service.PlayerApplicationService;
-import com.example.janken.domain.model.janken.JankenRepository;
-import com.example.janken.domain.model.player.PlayerRepository;
-import com.example.janken.domain.transaction.TransactionManager;
-import com.example.janken.infrastructure.dao.JankenDao;
-import com.example.janken.infrastructure.dao.JankenDetailDao;
-import com.example.janken.infrastructure.dao.PlayerDao;
 import com.example.janken.infrastructure.jdbctransaction.JdbcTransactionManager;
 import com.example.janken.infrastructure.mysqldao.JankenDetailMySQLDao;
 import com.example.janken.infrastructure.mysqldao.JankenMySQLDao;
 import com.example.janken.infrastructure.mysqldao.PlayerMySQLDao;
 import com.example.janken.infrastructure.mysqlrepository.JankenMySQLRepository;
 import com.example.janken.infrastructure.mysqlrepository.PlayerMySQLRepository;
-import com.example.janken.presentation.cli.controller.JankenController;
-import com.example.janken.registry.ServiceLocator;
+import com.example.janken.presentation.cli.controller.JankenCLIController;
+import lombok.val;
 
 public class JankenCLIApplication {
 
@@ -23,22 +17,21 @@ public class JankenCLIApplication {
 
         // 依存解決の設定
 
-        ServiceLocator.register(JankenController.class, JankenController.class);
+        val tm = new JdbcTransactionManager();
 
-        ServiceLocator.register(JankenApplicationService.class, JankenApplicationService.class);
-        ServiceLocator.register(PlayerApplicationService.class, PlayerApplicationService.class);
+        val playerDao = new PlayerMySQLDao();
+        val jankenDao = new JankenMySQLDao();
+        val jankenDetailDao = new JankenDetailMySQLDao();
 
-        ServiceLocator.register(TransactionManager.class, JdbcTransactionManager.class);
+        val playerRepository = new PlayerMySQLRepository(playerDao);
+        val jankenRepository = new JankenMySQLRepository(jankenDao, jankenDetailDao);
 
-        ServiceLocator.register(PlayerDao.class, PlayerMySQLDao.class);
-        ServiceLocator.register(JankenDao.class, JankenMySQLDao.class);
-        ServiceLocator.register(JankenDetailDao.class, JankenDetailMySQLDao.class);
-
-        ServiceLocator.register(PlayerRepository.class, PlayerMySQLRepository.class);
-        ServiceLocator.register(JankenRepository.class, JankenMySQLRepository.class);
+        val playerApplicationService = new PlayerApplicationService(tm, playerRepository);
+        val jankenApplicationService = new JankenApplicationService(tm, playerRepository, jankenRepository);
 
         // 実行
 
-        ServiceLocator.resolve(JankenController.class).play();
+        val jankkenController = new JankenCLIController(playerApplicationService, jankenApplicationService);
+        jankkenController.play();
     }
 }

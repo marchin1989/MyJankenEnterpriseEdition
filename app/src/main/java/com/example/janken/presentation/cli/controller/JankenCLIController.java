@@ -5,13 +5,14 @@ import com.example.janken.application.service.PlayerApplicationService;
 import com.example.janken.domain.model.janken.Hand;
 import com.example.janken.domain.model.player.Player;
 import com.example.janken.presentation.cli.view.View;
-import com.example.janken.registry.ServiceLocator;
+import lombok.AllArgsConstructor;
 import lombok.val;
 
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class JankenController {
+@AllArgsConstructor
+public class JankenCLIController {
 
     // ID は実際のアプリケーションでは認証情報から取得することが想定される
     private static final String PLAYER_1_ID = "1";
@@ -22,8 +23,8 @@ public class JankenController {
     private static final Scanner STDIN_SCANNER = new Scanner(System.in);
     private static final String VIEW_RESOURCE_PREFIX = "cli/view/";
 
-    private PlayerApplicationService playerApplicationService = ServiceLocator.resolve(PlayerApplicationService.class);
-    private JankenApplicationService jankenApplicationService = ServiceLocator.resolve(JankenApplicationService.class);
+    private PlayerApplicationService playerApplicationService;
+    private JankenApplicationService jankenApplicationService;
 
     public void play() {
         // プレイヤーを取得

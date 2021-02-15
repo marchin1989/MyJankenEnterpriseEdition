@@ -9,10 +9,12 @@ import com.example.janken.infrastructure.jdbctransaction.mapper.JankenDetailInse
 import com.example.janken.infrastructure.jdbctransaction.mapper.JankenDetailRowMapper;
 import com.example.janken.infrastructure.jdbctransaction.mapper.RowMapper;
 import lombok.val;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class JankenDetailMySQLDao implements JankenDetailDao {
 
     private static final String SELECT_FROM_CLAUSE = "SELECT id, janken_id, player_id, hand, result " +

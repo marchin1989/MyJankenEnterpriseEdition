@@ -5,6 +5,7 @@ import com.example.janken.infrastructure.jdbctransaction.mapper.InsertMapper;
 import com.example.janken.infrastructure.jdbctransaction.mapper.RowMapper;
 import com.example.janken.infrastructure.jdbctransaction.mapper.SingleRowMapper;
 import lombok.val;
+import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class SimpleJDBCWrapper {
     public <T> List<T> findList(Transaction tx,
                                 RowMapper<T> mapper,

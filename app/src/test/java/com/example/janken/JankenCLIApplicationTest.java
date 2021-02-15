@@ -3,14 +3,13 @@
  */
 package com.example.janken;
 
-import com.example.janken.domain.model.janken.JankenRepository;
 import com.example.janken.domain.transaction.TransactionManager;
 import com.example.janken.infrastructure.dao.JankenDao;
 import com.example.janken.infrastructure.dao.JankenDetailDao;
 import com.example.janken.infrastructure.jdbctransaction.JdbcTransactionManager;
 import com.example.janken.infrastructure.mysqldao.JankenDetailMySQLDao;
 import com.example.janken.infrastructure.mysqldao.JankenMySQLDao;
-import com.example.janken.registry.ServiceLocator;
+import com.example.janken.infrastructure.mysqlrepository.JankenMySQLRepository;
 import lombok.val;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -110,7 +109,7 @@ class JankenCLIApplicationTest {
 
             // じゃんけんデータの検証
             assertEquals(jankensCountBeforeTest + 1, jankenDao.count(tx), "じゃんけんが 1 件追加されたこと");
-            val jankenRepository = ServiceLocator.resolve(JankenRepository.class);
+            val jankenRepository = new JankenMySQLRepository(jankenDao, jankenDetailDao);
             val savedJankens = jankenRepository.findAllOrderByPlayedAt(tx);
             val savedJanken = savedJankens.get(savedJankens.size() - 1);
             val savedJankenId = savedJanken.getId();

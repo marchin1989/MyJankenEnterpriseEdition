@@ -6,7 +6,9 @@ import com.example.janken.infrastructure.dao.PlayerDao;
 import com.example.janken.infrastructure.jdbctransaction.SimpleJDBCWrapper;
 import com.example.janken.infrastructure.jdbctransaction.mapper.PlayerRowMapper;
 import lombok.val;
+import org.springframework.stereotype.Component;
 
+@Component
 public class PlayerMySQLDao implements PlayerDao {
     private static final String SELECT_FROM_CLAUSE = "SELECT id, name FROM players ";
 
