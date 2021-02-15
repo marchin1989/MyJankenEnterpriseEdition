@@ -12,11 +12,11 @@ import java.util.Optional;
 @Getter
 @EqualsAndHashCode
 @ToString
-class JankenResponseBody {
+class JankenPostResponseBody {
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    static JankenResponseBody of(Optional<Player> maybeWinner) {
-        return new JankenResponseBody(maybeWinner.map(Player::getName).orElse(null));
+    static JankenPostResponseBody of(Optional<Player> maybeWinner) {
+        return new JankenPostResponseBody(maybeWinner.map(Player::getName).orElse(null));
     }
 
     private final String winnerPlayerName;

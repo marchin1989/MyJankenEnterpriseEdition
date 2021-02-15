@@ -6,17 +6,20 @@ import com.example.janken.domain.model.janken.JankenRepository;
 import com.example.janken.domain.model.player.Player;
 import com.example.janken.domain.model.player.PlayerRepository;
 import com.example.janken.domain.transaction.TransactionManager;
-import com.example.janken.registry.ServiceLocator;
+import lombok.AllArgsConstructor;
 import lombok.val;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Service
+@AllArgsConstructor
 public class JankenApplicationService {
 
-    private final TransactionManager tm = ServiceLocator.resolve(TransactionManager.class);
+    private final TransactionManager tm;
 
-    private final PlayerRepository playerRepository = ServiceLocator.resolve(PlayerRepository.class);
-    private final JankenRepository jankenRepository = ServiceLocator.resolve(JankenRepository.class);
+    private final PlayerRepository playerRepository;
+    private final JankenRepository jankenRepository;
 
     /**
      * じゃんけんを実行し、勝者を返す。
