@@ -10,6 +10,7 @@ import com.example.janken.infrastructure.jdbctransaction.JdbcTransactionManager;
 import com.example.janken.infrastructure.mysqldao.JankenDetailMySQLDao;
 import com.example.janken.infrastructure.mysqldao.JankenMySQLDao;
 import com.example.janken.infrastructure.mysqlrepository.JankenMySQLRepository;
+import com.example.janken.presentation.cli.view.View;
 import lombok.val;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -41,6 +42,9 @@ class JankenCLIApplicationTest {
 
     @BeforeAll
     static void setup() {
+        // Velocity 初期化のログを出さないよう、この時点で Velocity を初期化
+        new View(null);
+
         stdinSnatcher = new StandardInputSnatcher();
         System.setIn(stdinSnatcher);
         stdoutSnatcher = new StandardOutputSnatcher();

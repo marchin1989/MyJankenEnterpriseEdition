@@ -3,6 +3,7 @@ package com.example.janken.presentation.cli.view;
 import lombok.val;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
+import org.slf4j.helpers.NOPLogger;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -13,10 +14,10 @@ import java.util.Map;
 public class View {
 
     static {
-        Velocity.setProperty("resource.loader", "class");
-        Velocity.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
-        Velocity.setProperty("input.encoding", "UTF-8");
-        Velocity.setProperty("output.encoding", "UTF-8");
+        Velocity.setProperty("runtime.log.instance", NOPLogger.NOP_LOGGER);
+        Velocity.setProperty("resource.loaders", "class");
+        Velocity.setProperty("resource.loader.class.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+        Velocity.setProperty("resource.default_encoding", "UTF-8");
         Velocity.init();
     }
 
