@@ -39,6 +39,9 @@ out/
 # Ignore Gradle build output directory
 target
 
+# jOOQ generated
+/app/src/main/java/com/example/janken/infrastructure/jooq/generated/
+
 # Data file
 data/jankens.csv
 data/janken_details.csv

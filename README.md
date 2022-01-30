@@ -18,7 +18,7 @@ ln -s ../../bin/pre-commit .git/hooks/pre-commit
 
 ```shell
 docker-compose -f docker-compose.yml up -d
-./gradlew bootRun
+./bin/run.sh develop
 ```
 
 その後、以下の URL などにアクセス

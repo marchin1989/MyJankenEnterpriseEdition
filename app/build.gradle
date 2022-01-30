@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '2.6.1'
+    id 'org.springframework.boot' version '2.6.2'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 
     id 'org.owasp.dependencycheck' version '6.0.3'
@@ -25,6 +25,11 @@ dependencies {
     // MySQL
     runtimeOnly 'mysql:mysql-connector-java'
 
+    // OR Mapper
+    implementation 'org.springframework.boot:spring-boot-starter-jooq'
+    // Migration tool
+    implementation 'org.flywaydb:flyway-core'
+
     // Development tools
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     compileOnly 'org.projectlombok:lombok'
@@ -37,6 +42,11 @@ dependencies {
     testImplementation 'com.tngtech.archunit:archunit-junit5:0.14.1'
 }
 
+// log4j の脆弱性 (CVE-2021-44228) が OWASP Dependency Check のエラーにならないようにするための除外設定
+configurations.all {
+    exclude group: "org.apache.logging.log4j"
+}
+
 test {
     // Use junit platform for unit tests.
     useJUnitPlatform()
@@ -45,6 +55,8 @@ test {
 dependencyCheck {
     failBuildOnCVSS = 7.0F
 }
+
+apply from: 'jooq-flyway.gradle'
 
 // 以下、Herokuの設定
 // 参考: https://devcenter.heroku.com/articles/deploying-gradle-apps-on-heroku
