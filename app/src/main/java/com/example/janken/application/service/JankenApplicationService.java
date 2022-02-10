@@ -32,7 +32,7 @@ public class JankenApplicationService {
             val janken = Janken.play(player1Id, player1Hand, player2Id, player2Hand);
 
             // じゃんけんとじゃんけん明細を保存
-            jankenRepository.save(tx, janken);
+            jankenRepository.save(janken);
 
             // 勝敗を返却
             return janken.winnerPlayerId()

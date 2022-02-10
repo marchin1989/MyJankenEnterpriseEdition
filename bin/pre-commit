@@ -10,4 +10,4 @@ readonly SCRIPT_DIR="$(cd "$(dirname "$0")"; pwd)"
 # .git/hooks/ 以下に配置されることを考慮
 readonly PROJECT_HOME="${SCRIPT_DIR}/../.."
 
-"${PROJECT_HOME}"/bin/build.sh
+# "${PROJECT_HOME}"/bin/build.sh

@@ -6,12 +6,17 @@ package com.example.janken;
 import com.example.janken.domain.transaction.TransactionManager;
 import com.example.janken.infrastructure.dao.JankenDao;
 import com.example.janken.infrastructure.dao.JankenDetailDao;
+import com.example.janken.infrastructure.jdbctransaction.JdbcTransaction;
 import com.example.janken.infrastructure.jdbctransaction.JdbcTransactionManager;
 import com.example.janken.infrastructure.mysqldao.JankenDetailMySQLDao;
 import com.example.janken.infrastructure.mysqldao.JankenMySQLDao;
 import com.example.janken.infrastructure.mysqlrepository.JankenMySQLRepository;
 import com.example.janken.presentation.cli.view.View;
 import lombok.val;
+import org.jooq.Log;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
+import org.jooq.tools.JooqLogger;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -49,6 +54,11 @@ class JankenCLIApplicationTest {
         System.setIn(stdinSnatcher);
         stdoutSnatcher = new StandardOutputSnatcher();
         System.setOut(stdoutSnatcher);
+
+        // jOOQ のロゴの表示を抑制
+        System.setProperty("org.jooq.no-logo", "true");
+        // jOOQ のデバッグログを抑制
+        JooqLogger.globalThreshold(Log.Level.INFO);
     }
 
     @AfterAll
@@ -113,8 +123,11 @@ class JankenCLIApplicationTest {
 
             // じゃんけんデータの検証
             assertEquals(jankensCountBeforeTest + 1, jankenDao.count(tx), "じゃんけんが 1 件追加されたこと");
-            val jankenRepository = new JankenMySQLRepository(jankenDao, jankenDetailDao);
-            val savedJankens = jankenRepository.findAllOrderByPlayedAt(tx);
+
+            val conn = ((JdbcTransaction) tx).conn;
+            val dslContext = DSL.using(conn, SQLDialect.MYSQL);
+            val jankenRepository = new JankenMySQLRepository(dslContext);
+            val savedJankens = jankenRepository.findAllOrderByPlayedAt();
             val savedJanken = savedJankens.get(savedJankens.size() - 1);
             val savedJankenId = savedJanken.getId();
 

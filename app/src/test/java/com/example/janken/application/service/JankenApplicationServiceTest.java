@@ -5,13 +5,15 @@ import com.example.janken.domain.model.janken.JankenDetail;
 import com.example.janken.domain.model.player.Player;
 import com.example.janken.domain.transaction.Transaction;
 import com.example.janken.infrastructure.dao.JankenDetailDao;
+import com.example.janken.infrastructure.jdbctransaction.JdbcTransaction;
 import com.example.janken.infrastructure.jdbctransaction.JdbcTransactionManager;
-import com.example.janken.infrastructure.mysqldao.JankenMySQLDao;
 import com.example.janken.infrastructure.mysqldao.PlayerMySQLDao;
 import com.example.janken.infrastructure.mysqlrepository.JankenMySQLRepository;
 import com.example.janken.infrastructure.mysqlrepository.PlayerMySQLRepository;
 import lombok.NoArgsConstructor;
 import lombok.val;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -31,33 +33,36 @@ class JankenApplicationServiceTest {
         val tm = new JdbcTransactionManager();
 
         val playerDao = new PlayerMySQLDao();
-        val jankenDao = new JankenMySQLDao();
-        val jankenDetailDao = new JankenDetailErrorDao();
 
-        val playerRepository = new PlayerMySQLRepository(playerDao);
-        val jankenRepository = new JankenMySQLRepository(jankenDao, jankenDetailDao);
-        val jankenService = new JankenApplicationService(tm, playerRepository, jankenRepository);
+        tm.transactional(tx -> {
+            val conn = ((JdbcTransaction) tx).conn;
+            val dslContext = DSL.using(conn, SQLDialect.MYSQL);
+            val jankenRepository = new JankenMySQLRepository(dslContext);
+            val playerRepository = new PlayerMySQLRepository(playerDao);
 
-        val player1 = new Player("1", "Alice");
-        val player1Hand = Hand.STONE;
-        val player2 = new Player("2", "Bob");
-        val player2Hand = Hand.PAPER;
+            val jankenService = new JankenApplicationService(tm, playerRepository, jankenRepository);
 
-        val beforeJankenCount = tm.transactional(jankenRepository::count);
+            val player1 = new Player("1", "Alice");
+            val player1Hand = Hand.STONE;
+            val player2 = new Player("2", "Bob");
+            val player2Hand = Hand.PAPER;
 
-        // 実行
-        try {
-            jankenService.play(player1.getId(), player1Hand, player2.getId(), player2Hand);
+            val beforeJankenCount = jankenRepository.count();
 
-            // 例外が発生しない場合は、テスト失敗
-            fail();
-        } catch (UnsupportedOperationException e) {
-            // Do nothing
-        }
+            // 実行
+            try {
+                jankenService.play(player1.getId(), player1Hand, player2.getId(), player2Hand);
 
-        // 検証
-        val afterJankenCount = tm.transactional(jankenRepository::count);
-        assertEquals(beforeJankenCount, afterJankenCount, "じゃんけんのデータが増えていない");
+                // 例外が発生しない場合は、テスト失敗
+                fail();
+            } catch (UnsupportedOperationException e) {
+                // Do nothing
+            }
+
+            // 検証
+            val afterJankenCount = jankenRepository.count();
+            assertEquals(beforeJankenCount, afterJankenCount, "じゃんけんのデータが増えていない");
+        });
     }
 }
 
